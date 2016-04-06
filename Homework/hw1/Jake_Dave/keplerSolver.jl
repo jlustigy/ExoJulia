@@ -7,6 +7,8 @@
 #
 ############################
 
+#@stest KeplerSolver.keplerEquation(0.5, 0.5)
+
 module KeplerSolver
 
 export sign, keplerEquation
@@ -66,6 +68,7 @@ function keplerEquation(M, e)
     return E
                     
 end
+
 
 # end function
 
