@@ -60,6 +60,31 @@ e.g. if you write a module over the course of a few days, it's nice to push to g
 5. **Submit pull request** by navigating to your fork on github.com and pressing the green button for "New Pull Request". This will request that your fork be "pulled" onto the Master branch. Since you've done all your work in a compeletly new directory (didn't you?) there won't be any issues merging :) 
 6. Each week the fastest code (and then cleanist in the case of ties?) will be selected to become the "offical" code in the ExoJulia package.  
 
+### Finding the fastest functions
+
+Owen wrote a [script](https://github.com/jlustigy/ExoJulia/blob/master/Homework/stest.sh) that will evaluate the runtime for all of our code. In order for the code to run your functions put the following line in a comment in the top of a `*.jl` file that contains the function you want to test: 
+
+  ```julia
+  #@stest func(params)
+  ```
+
+For instance, 
+
+  ```julia
+  # Suppose this is 'demo.jl'
+  
+  # The following line will be found by the bash script
+  #@stest func(0.5)
+  
+  # You can have multiple stests!
+  #@stest func(0.9)
+  
+  function func(x)
+    x = 10.0^x  
+  end
+  ```
+We will need to discuss as a class standard parameters to use to that we are truely comparing apples to apples.
+
 ## Coding Conventions
 
 * See the [Julia progamming style guide](http://docs.julialang.org/en/release-0.4/manual/style-guide/)
@@ -91,3 +116,5 @@ e.g. if you write a module over the course of a few days, it's nice to push to g
   # Run code!
   x = ExoJulia.Orbit.keplerEquation(0.5, 0.5)
   ```
+  
+* Remember to add the line to test the runtime of your functions! `#@stest func(params)`
