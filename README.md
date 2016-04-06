@@ -11,7 +11,7 @@ This code is being developed by Astronomy graduate students at the University of
 You should only need to perform the following once:
 
 1. **Fork this repository** (click button in upper right of this page) to create a working branch on *your* github account
-2. Clone **your fork** onto your computer:
+2. **Clone *your* fork** onto your computer:
   
   ```bash
   git clone git@github.com:YOUR_USERNAME/ExoJulia.git
@@ -39,8 +39,8 @@ e.g. if you write a module over the course of a few days, it's nice to push to g
   ```  
   This brings your fork's master branch into sync with the upstream repository, without losing your local changes.
     
-2. **Create a unique homework directory** `Name1_Name2` in `Homework\hw#\` where "#" is the homework number, and Name1 and Name2 (etc) are the group members names. So each homework assignment will have a directory, within which each coding group will have a directory. This will ensure everyone's code is saved for future reference and will (hopefully) minimize merge conflicts that can occur when people have worked on the same files.  
-3. **Write code** and work in Jupyter Notebooks within the directory you just created. Make sure to reference the "official" (previously selected) code if you are building on previous work. DO NOT LOAD MODULES FROM OTHER HOMEWORK DIRECTORIES. 
+2. **Create a unique homework directory**: `Homework\hw#\Name1_Name2` where "#" is the homework number, and "Name1" and "Name2" (and so forth) are the names of the group members. So each homework assignment will have a directory, within which each coding group will have a directory. This will ensure everyone's code is saved for future reference and will (hopefully) minimize merge conflicts that can occur when people have worked on the same files.  
+3. **Write code** and work in Jupyter Notebooks within the directory you just created. Make sure to reference the "official" (previously selected) code if you are building on previous work. DO NOT LOAD MODULES FROM OTHER HOMEWORK DIRECTORIES.
 4. **Add, commit, push** to your remote branch:
   
   ```bash
