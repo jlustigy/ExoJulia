@@ -1,4 +1,4 @@
-# ExoJulia <img src="https://github.com/jlustigy/ExoJulia/blob/master/Extras/proto1.png" width="13%" height="13%" align="left" />
+# ExoJulia <img src="https://github.com/jlustigy/ExoJulia/blob/master/Resources/proto1.png" width="13%" height="13%" align="left" />
 
 **Julia packages for fast exoplanet modeling**
 
@@ -38,6 +38,14 @@ e.g. if you write a module over the course of a few days, it's nice to push to g
   git merge upstream/master  
   ```  
   This brings your fork's master branch into sync with the upstream repository, without losing your local changes.
+
+2. Add, commit, push to your online fork (if you've made changes on your fork):
+
+  ```bash
+  git add -A
+  git commit -am "Message"
+  git push origin master
+  ```
     
 2. **Create a unique homework directory**: `Homework\hw#\Name1_Name2` where "#" is the homework number, and "Name1" and "Name2" (and so forth) are the names of the group members. So each homework assignment will have a directory, within which each coding group will have a directory. This will ensure everyone's code is saved for future reference and will (hopefully) minimize merge conflicts that can occur when people have worked on the same files.  
 3. **Write code** and work in Jupyter Notebooks within the directory you just created. Make sure to reference the "official" (previously selected) code if you are building on previous work. DO NOT LOAD MODULES FROM OTHER HOMEWORK DIRECTORIES.
@@ -52,6 +60,34 @@ e.g. if you write a module over the course of a few days, it's nice to push to g
 5. **Submit pull request** by navigating to your fork on github.com and pressing the green button for "New Pull Request". This will request that your fork be "pulled" onto the Master branch. Since you've done all your work in a compeletly new directory (didn't you?) there won't be any issues merging :) 
 6. Each week the fastest code (and then cleanist in the case of ties?) will be selected to become the "offical" code in the ExoJulia package.  
 
-## Useful notes
+## Coding Conventions
 
-* [Julia progamming style guide](http://docs.julialang.org/en/release-0.4/manual/style-guide/)
+* See the [Julia progamming style guide](http://docs.julialang.org/en/release-0.4/manual/style-guide/)
+* Write functions within `*.jl` files:  
+  
+  ```julia
+  # Suppose this is 'function.jl'
+  function func()
+    # Epic code here!
+  end
+  ```
+  
+* `include` functions in other/test `*.jl` files:  
+  
+  ```julia
+    include("function.jl")
+    func()
+  ```
+
+* For using functions that have been merged into the official ExoJulia package:
+  
+  ```julia
+  # Add ExoJulia/ to path
+  push!(LOAD_PATH, "/PATH/TO/ExoJulia/ExoJulia")
+  
+  # import ExoJulia
+  using ExoJulia
+  
+  # Run code!
+  x = ExoJulia.Orbit.keplerEquation(0.5, 0.5)
+  ```
