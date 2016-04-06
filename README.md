@@ -4,9 +4,7 @@
 
 This code is being developed by Astronomy graduate students at the University of Washington for the course *ASTR 598A: Exoplanets*. Please direct pedagogical and course-related questions to [Prof. Eric Agol](http://faculty.washington.edu/agol/index.html).  
 
-## Course Collaboration Instructions
-
-* [Julia progamming style guide](http://docs.julialang.org/en/release-0.4/manual/style-guide/)
+## ASTR 598A Collaboration Instructions
 
 ### Getting started
 
@@ -52,4 +50,8 @@ e.g. if you write a module over the course of a few days, it's nice to push to g
   ```
   
 5. **Submit pull request** by navigating to your fork on github.com and pressing the green button for "New Pull Request". This will request that your fork be "pulled" onto the Master branch. Since you've done all your work in a compeletly new directory (didn't you?) there won't be any issues merging :) 
-6. Each week the fastest code (and then cleanist in the case of ties?) will be selected to become the "offical" code in the ExoJulia package.   
+6. Each week the fastest code (and then cleanist in the case of ties?) will be selected to become the "offical" code in the ExoJulia package.  
+
+## Useful notes
+
+* [Julia progamming style guide](http://docs.julialang.org/en/release-0.4/manual/style-guide/)
