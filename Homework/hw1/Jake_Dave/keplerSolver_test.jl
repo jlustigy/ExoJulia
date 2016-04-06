@@ -5,14 +5,11 @@
 #
 # Functions test Kepler's Equation solution
 #
-# 
 ############################
 
-module KeplerSolver_test
-
-using KeplerSolver # Note: using -> function you call were exported in the module.jl file
-
 using PyPlot
+
+include("keplerSolver.jl")
 
 function testKeplerEquation1()
     # This function tests the ExoJulia keplerEquation solver.
@@ -85,8 +82,4 @@ function testKeplerEquation2()
         legend(bbox_to_anchor=[1.3, 1.02])
         grid()
     end
-end
-
-# end function
-
 end

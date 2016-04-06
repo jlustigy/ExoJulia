@@ -7,21 +7,7 @@
 #
 ############################
 
-#@stest KeplerSolver.keplerEquation(0.5, 0.5)
-
-module KeplerSolver
-
-export sign, keplerEquation
-
-function sign(x)
-    if x >= 0.0 # Positive
-        return 1.0
-    else # Negative!
-        return -1.0
-    end
-end
-
-# End function
+#@stest keplerEquation(0.5, 0.5)
 
 function keplerEquation(M, e)
     # Given mean anomaly M in radians and eccentricity e, return the eccentric anomoly
@@ -69,7 +55,4 @@ function keplerEquation(M, e)
                     
 end
 
-
 # end function
-
-end # end module
