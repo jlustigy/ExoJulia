@@ -2,7 +2,7 @@
 
 **Julia packages for fast exoplanet modeling**
 
-This code is being developed by Astronomy graduate students at the University of Washington for the course *ASTR 598A: Exoplanets*. Please direct pedagogical and course-related questions to [Prof. Eric Agol](http://faculty.washington.edu/agol/index.html).  
+This code is being developed by Astronomy graduate students at the University of Washington for the course *ASTR 598A: Exoplanets*. The course and this project are led by [Professor Eric Agol](http://faculty.washington.edu/agol/index.html).  
 
 ## ASTR 598A Collaboration Instructions
 
