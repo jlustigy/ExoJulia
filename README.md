@@ -10,7 +10,8 @@ This code is being developed by Astronomy graduate students at the University of
 
 You should only need to perform the following once:
 
-1. **Fork this repository** (click button in upper right of this page) to create a working branch on *your* github account
+1. **Fork this repository** (click button in upper right of this page) to create a working branch on *your* github account.  If you need help with git/github, check out this 'Getting Started' page by [Phil Marshall:] (https://github.com/drphilmarshall/GettingStarted)
+
 2. **Clone *your* fork** onto your computer:
   
   ```bash
