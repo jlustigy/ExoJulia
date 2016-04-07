@@ -60,30 +60,41 @@ e.g. if you write a module over the course of a few days, it's nice to push to g
 5. **Submit pull request** by navigating to your fork on github.com and pressing the green button for "New Pull Request". This will request that your fork be "pulled" onto the Master branch. Since you've done all your work in a compeletly new directory (didn't you?) there won't be any issues merging :) 
 6. Each week the fastest code (and then cleanist in the case of ties?) will be selected to become the "offical" code in the ExoJulia package.  
 
-### Finding the fastest functions
+### Finding the fastest functions for the `ExoJulia` package
 
-Owen wrote a [script](https://github.com/jlustigy/ExoJulia/blob/master/Homework/stest.sh) that will evaluate the runtime for all of our code. In order for the code to run your functions put the following line in a comment in the top of a `*.jl` file that contains the function you want to test: 
+Owen wrote an awesome [script](https://github.com/jlustigy/ExoJulia/blob/master/Homework/stest.sh) that will evaluate the runtime for all of our code. 
+
+* In order for the code to run on your functions, put the following line in a comment at the top of a `*.jl` file that contains the function you want to test: 
 
   ```julia
   #@stest func(params)
   ```
 
-For instance, 
+  For instance, 
 
   ```julia
   # Suppose this is 'demo.jl'
   
-  # The following line will be found by the bash script
+  # The following line tells the stest script to run the function, func() with an argument of 0.5
   #@stest func(0.5)
   
   # You can have multiple stests!
   #@stest func(0.9)
   
   function func(x)
-    x = 10.0^x  
+    10.0^x  
   end
   ```
-We will need to discuss as a class standard parameters to use to that we are truely comparing apples to apples.
+* We will need to discuss as a class standard parameters to use to that we are truely comparing apples to apples.
+
+* To test the runtime of a function using this script (always good to check before submitting a pull request), navigate to the `Homework/` directory and execute the bash script:
+
+  ```bash
+  ./stest hw1
+  ```
+  
+  or `hw2`, `hw3`, etc. 
+  
 
 ## Coding Conventions
 
