@@ -9,7 +9,7 @@
 
 using PyPlot
 
-include("kepler_solve.jl")
+include("keplerSolver.jl")
 
 function testKeplerEquation1()
     # This function tests the ExoJulia keplerEquation solver.
