@@ -24,7 +24,7 @@ do
                sed -n 's/^#@stest[[:space:]]*//p' "$FILE" | while read -r line ; do
                   echo ""
                   echo "  Runtime for: $line"
-                  echo "  $(julia -e"include(\"$FILE\"); @time $line")"
+                  echo "  $(julia -e"include(\"$FILE\"); @time [$line for i=1:2]")"
                done
             done
          fi
