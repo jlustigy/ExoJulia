@@ -130,3 +130,24 @@ Owen wrote an awesome [script](https://github.com/jlustigy/ExoJulia/blob/master/
   ```
   
 * Remember to add the line to test the runtime of your functions! `#@stest func(params)`
+* **Working on a new branch:** See [Astropy example of workflow](http://docs.astropy.org/en/stable/development/workflow/development_workflow.html#workflow) 
+  * On the command line in your ExoJulia directory, get the latest version of `ExoJulia`: 
+  
+    ```bash
+    git fetch upstream
+    ```
+
+  * Now, create a new branch:
+    
+    ```bash
+    git checkout -b newbranch
+    ```
+  
+  * Do work on `newbranch`
+  * Add, commit, and then push the `newbranch` to `origin`:
+    
+    ```bash
+    git push origin newbranch
+    ```
+    
+  * Now you can submit pull request on the github webpage from `newbranch` to `master`
