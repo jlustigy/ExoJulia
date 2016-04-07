@@ -38,3 +38,41 @@ function newtons(f::Function,f_prime::Function,E_0::Float64,e::Float64,m::Float6
     return E_new
     
 end
+
+#How to convert from E to f
+EtoF(E::Float64,e::Float64) = 2.*atan((((1.+e)/(1.-e))^(1./2.))*tan(E/2.))
+
+#How to convert from E to r
+EtoR(E::Float64,e::Float64,a::Float64) = a*(1-e*cos(E))
+
+function orbit(e::Float64,sma::Float64,period::Float64;numpoints=1000)
+    
+    #returns a tuple of two arrays, the radii and f values of the whole orbit (0<=M<2pi)
+    #This will let us check to see that the orbits look right
+    
+    #e is eccentricity
+    
+    #sma is the smi major axis
+    
+    #period is what it sounds like\
+    
+    #numpoints is an optional keyword parameter, which tells it how many points to compute
+    #along the orbit. While all the points computed are correct, it looks better when you plot
+    #with lots of points.
+    
+    rs = []
+    fs = []
+    
+    times = linspace(0,period+(1.0/numpoints),numpoints)
+    
+    for time in times
+        em = M(time,0.,period)
+        E = newtons(g,g_prime,E0(em),e,em)
+        push!(fs,EtoF(E,e))
+        push!(rs,EtoR(E,e,sma))
+    end
+    
+    return (rs,fs)
+    
+end
+
