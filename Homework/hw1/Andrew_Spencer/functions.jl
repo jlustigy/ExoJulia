@@ -2,7 +2,7 @@
 # ecc = eccentricity
 # E = eccentric anomaly
 # M = mean motion  "$HW" == "./$1"
-#@stest [[time_newt(ecc,M) for M in linspace(0.0,2*pi,100)] for ecc in linspace(0.0,0.999,100)]
+#@stest time_newt()
 function g(ecc,E,M)
     E-ecc*sin(E) - M
 end
@@ -23,8 +23,19 @@ function newt_kepler(ecc,E,M,eps)
     end
 end
 
-function time_newt(ecc,M)
-    eps = 1e-15
-    E0 = M + 0.85*ecc*sign(sin(M))
-    newt_kepler(ecc,E0,M,eps)
+function time_newt()
+    eps = 1e-14
+
+    #Timing test
+    #Construct parameters
+    ecc = linspace(0,0.999,100)
+    M = linspace(0,2*pi,100)
+
+    #Calculate eccentric anomaly E
+    for (i,valecc) in enumerate(ecc)
+        for (j,valM) in enumerate(M)
+            E = valM + 0.85*valecc*sign(sin(valM))
+            newt_kepler(valecc,E,valM,eps)
+        end
+    end
 end
