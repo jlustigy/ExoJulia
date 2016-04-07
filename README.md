@@ -14,13 +14,13 @@ You should only need to perform the following once:
 2. **Clone *your* fork** onto your computer:
   
   ```bash
-  git clone git@github.com:YOUR_USERNAME/ExoJulia.git
+  git clone https://github.com/YOUR_USERNAME/ExoJulia.git
   ```
 
 3. Add *this* repo as an [upstream remote for your fork](https://help.github.com/articles/configuring-a-remote-for-a-fork/):
 
   ```bash
-  git remote add upstream git@github.com:jlustigy/ExoJulia.git
+  git remote add upstream https://github.com/jlustigy/ExoJulia.git
   ```
 
 3. Do HW assignments in the `Homework/` subdirectories (see below)
