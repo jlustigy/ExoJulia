@@ -7,7 +7,7 @@
 
 #@stest kepler_solve(0.5,0.5)
 
-function kepler_solve(M,ecc)
+function kepler_solve(M::Float64,ecc::Float64)
 #
 # Input:
 #  M  mean anomaly = n(t-t0) = 2\pi/P*(t-t0), where P is period, n 
@@ -24,10 +24,10 @@ function kepler_solve(M,ecc)
 # Set the initial parameter to make it into the while loop:
   di3 = 1.0
 # Set the tolerance:
-  tol = 1e-14
+  tol = 1e-12
 # Begin loop for quartic solver:
   niter = 0
-  while (abs(di3) > tol) & (niter < 20)
+  while (abs(di3) > tol) & (niter < 30)
 # Define e*sin(E) and e*cos(E) so that these do not need to
 # be recomputed:
     SE = ecc*sin(E); CE = ecc*cos(E)
@@ -37,6 +37,7 @@ function kepler_solve(M,ecc)
     di1 = -f_of_E/df_of_E
     di2 = -f_of_E/(df_of_E+0.5*di1*d2f_of_E)
     di3 = -f_of_E/(df_of_E+0.5*di2*d2f_of_E+di2^2/6.*d3f_of_E)
+#    di3 = -f_of_E/df_of_E
 # Finally, compute next estimate of the eccentric anomaly, E:
     E+=di3 
     niter = niter + 1
