@@ -8,6 +8,7 @@
 function fastsortrows(B::AbstractMatrix,cols::Array; kws...)
   """
   Solution by: abhishekmalali (gihub)
+  See: https://github.com/JuliaLang/julia/issues/9832
   """
        for i = 1:length(cols)
         if i == 1
