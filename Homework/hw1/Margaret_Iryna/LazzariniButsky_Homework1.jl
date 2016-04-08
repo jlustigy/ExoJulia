@@ -1,4 +1,4 @@
-#@stest [[kepler_solve!(M,ecc) for M in linspace(0,2pi,100)] for ecc in linspace(0,0.999,100)]
+#@stest [[Kepler(M,ecc) for M in linspace(0,2pi,100)] for ecc in linspace(0,0.999,100)]
 
 function Kepler(M, e)
     E_old = M
