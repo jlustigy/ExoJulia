@@ -6,7 +6,7 @@
 ######################
 
 function v_semi_amp!(P::Float64, ecc::Float64, inc::Float64, Mp::Float64, Ms::Float64)
-    (2.0pi / (P * (1.0 - e*e)^(3./2.)) * (Mp*sin(inc))^3 / (Mp + Ms)^2)^(1./3.)
+    (2.0pi * 6.67259e-8 / (P * (1.0 - e*e)^(3./2.)) * (Mp*sin(inc))^3 / (Mp + Ms)^2)^(1./3.)
 end
 
 function v_rad!(K::Float64, w::Float64, f::Float64, ecc::Float64, gamma::Float64)

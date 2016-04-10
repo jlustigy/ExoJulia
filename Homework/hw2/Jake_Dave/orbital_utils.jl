@@ -6,7 +6,7 @@
 ######################
 
 
-function mean_anaomoly!(P::Float64, t::Float64, t0::Float64)
+function mean_anomaly!(P::Float64, t::Float64, t0::Float64)
     (2.0pi / P) * (t-t0)
 end
 
