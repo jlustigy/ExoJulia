@@ -14,5 +14,5 @@ using ExoJulia
 ```julia
 mean_anomaly = 0.5
 eccentricity = 0.1
-kplr = ExoJulia.Orbit.kepler_solve!(mean_anomaly, eccentricity)
+eccentric_anomaly = ExoJulia.Orbit.kepler_solve!(mean_anomaly, eccentricity)
 ```
