@@ -7,10 +7,10 @@
 
 #@stest [[kepler_solve!(M,ecc) for M in linspace(0,2pi,100)] for ecc in linspace(0,0.999,100)]
 
-function kepler_solve!(M::Float64,ecc::Float64)
+function kepler_solve(M::Float64,ecc::Float64)
 #
 # Input:
-#  M  mean anomaly = n(t-t0) = 2\pi/P*(t-t0), where P is period, n 
+#  M  mean anomaly = n(t-t0) = 2\pi/P*(t-t0), where P is period, n
 #                    mean motion, and t0 time of pericenter passage
 # ecc eccentricity 0 <= ecc < 1
 #
@@ -40,7 +40,7 @@ function kepler_solve!(M::Float64,ecc::Float64)
 #    di3 = -f_of_E/df_of_E
 #    di3 = -(E-ecc*sin(E))/(1.0-ecc*cos(E))
 # Finally, compute next estimate of the eccentric anomaly, E:
-    E+=di3 
+    E+=di3
     niter = niter + 1
 #    println(di3)
   end
