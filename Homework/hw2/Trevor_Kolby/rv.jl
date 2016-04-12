@@ -15,8 +15,6 @@ times = data[:,1]
 RVs = data[:,2]
 RV_errs = data[:,3]
 
-#@stest fit_RV(times,RVs,RV_errs)
-
 
 M(t::Array,t_p::Float64,P::Float64) = (2*pi/P).*(t.-t_p)
 M(t::Float64,t_p::Float64,P::Float64) = (2*pi/P)*(t-t_p)
@@ -57,7 +55,7 @@ end
 
 function get_params(fit_obj::LsqFit.LsqFitResult{Float64},x_data::Array,y_data::Array,y_err::Array) 
     params::Array = fit_obj.param
-    Es::Array = kepler_solve!(M(x_data,params[2],params[3]), params[1])
+    Es::Array = kepler_solve(M(x_data,params[2],params[3]), params[1])
     f::Array = EtoF(Es,params[1])
     h,c,v0 = hcv0(f,y_data,y_err)
     return [params[1],params[2],params[3],K(h,c),pomega(h,c),gamma(v0,K(h,c),params[1], pomega(h,c))]
@@ -107,6 +105,9 @@ function get_v_rad_fit(times::Array,params::Array)
     return h.*cos(f)+c*sin(f).+v0
     
 end
+
+println(fit_RV(times,RVs,RV_errs))
+#@stest fit_RV(times,RVs,RV_errs)
 
 function eff_func(t,t0::Float64,r0::Float64,sma::Float64,ecc::Float64,t_p::Float64,P::Float64)
     Ms = M(t,t_p,P)
