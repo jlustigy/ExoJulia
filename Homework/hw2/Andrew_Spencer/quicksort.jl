@@ -1,14 +1,14 @@
 # QUICKSORT FOR A traditional row-based array with multiple columns
 function quicksort2D(a)#,left,right)
     
-    lena = length(a[:,1])
-    a0 = zeros(Float64,1,lena)
+ #   lena = length(a[:,1])
+    a0 = zeros(Float64,1,length(a[:,1]))
     
-    if(lena < 2)
+    if(length(a[:,1]) < 2)
         return a
     end
     
-    if(lena == 2)
+    if(length(a[:,1]) == 2)
         if(a[1,1] > a[2,1])
             a0 = a[1,:]
             a[1,:] = a[2,:]
@@ -17,10 +17,10 @@ function quicksort2D(a)#,left,right)
         return a
     end
          
-    if(lena > 2)
-        pivot = a[div(lena,2)]
+    if(length(a[:,1]) > 2)
+        pivot = a[div(length(a[:,1]),2)]
         i = 1
-        j = lena
+        j = length(a[:,1])
 
         while(i <= j)
             

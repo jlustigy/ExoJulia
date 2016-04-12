@@ -1,14 +1,14 @@
         - # QUICKSORT FOR A traditional row-based array with multiple columns
         - function quicksort2D(a)#,left,right)
         -     
-  8462355     lena = length(a[:,1])
-    12768     a0 = zeros(Float64,1,lena)
+        -  #   lena = length(a[:,1])
+  8774076     a0 = zeros(Float64,1,length(a[:,1]))
         -     
-        0     if(lena < 2)
+    14640     if(length(a[:,1]) < 2)
         0         return a
         -     end
         -     
-        0     if(lena == 2)
+    14544     if(length(a[:,1]) == 2)
         0         if(a[1,1] > a[2,1])
         0             a0 = a[1,:]
         0             a[1,:] = a[2,:]
@@ -17,10 +17,10 @@
         0         return a
         -     end
         -          
-        0     if(lena > 2)
-        0         pivot = a[div(lena,2)]
+     8976     if(length(a[:,1]) > 2)
+     8976         pivot = a[div(length(a[:,1]),2)]
         0         i = 1
-        0         j = lena
+     8976         j = length(a[:,1])
         - 
         0         while(i <= j)
         -             
@@ -53,7 +53,7 @@
         - function run_quicksort()
         - 
         - #Data import
-117833960 pldata = readdlm("mystery_planet.txt")
+118441192 pldata = readdlm("mystery_planet.txt")
   2232817 time_data = pldata[:,1]
       560 RV_data = pldata[:,2]
       560 err_data = pldata[:,3]
@@ -66,8 +66,9 @@
    679687 newsorted1 = [phase RV_data]
         0 data = quicksort2D(newsorted1)
         - 
- 20694123 println(data)
+ 20720347 println(data)
         - 
         - end
         - 
         - run_quicksort()
+        - 
