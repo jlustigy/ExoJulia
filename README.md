@@ -126,7 +126,7 @@ Owen wrote an awesome [script](https://github.com/jlustigy/ExoJulia/blob/master/
   using ExoJulia
   
   # Run code!
-  x = ExoJulia.Orbit.kepler_solve!(0.5, 0.5)
+  x = ExoJulia.Orbit.kepler_solve(0.5, 0.5)
   ```
   
 * Remember to add the line to test the runtime of your functions! `#@stest func(params)`
