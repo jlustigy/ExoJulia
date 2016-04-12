@@ -31,7 +31,6 @@ gamma(v0::Float64,K::Float64,ecc::Float64,pomega::Float64) = v0-K*ecc*cosd(pomeg
 
 
 function P_guesser(x_data::Array,y_data::Array)
-    #minimum period to look for is distance between data points. Max is size of data. Step is 0.5
     P_array::Array{Float64} = collect(mean(diff(x_data)):0.5:maximum(x_data)-minimum(y_data))
     sq_array::Array{Float64} = [sum(diff(y_data[sortperm(mod(x_data,P))]).^2.0) for P=P_array]
     return P_array[findmin(sq_array)[2]]
@@ -55,32 +54,49 @@ function hcv0(f::Array{Float64},y_data::Array{Float64},y_error::Array{Float64})
 end
 
 
+function get_params(fit_obj::LsqFit.LsqFitResult{Float64},x_data::Array,y_data::Array,y_err::Array) 
+    params::Array = fit_obj.param
+    Es::Array = kepler_solve!(M(x_data,params[2],params[3]), params[1])
+    f::Array = EtoF(Es,params[1])
+    h,c,v0 = hcv0(f,y_data,y_err)
+    return [params[1],params[2],params[3],K(h,c),pomega(h,c),gamma(v0,K(h,c),params[1], pomega(h,c))]
+end
+
 function fit_RV(x_data::Array{Float64},y_data::Array{Float64},y_err::Array{Float64})
-    
-    function v_rad(t::Array{Float64},params::Array{Float64}) #params are e,t_p,P
+      
+    function v_rad(t::Array{Float64},params::Array{Float64})
+                       
         if 0 <= params[1] < 1
-            Es::Array{Float64} = kepler_solve!(M(t,params[2],params[3]),params[1])
-            f::Array{Float64} = EtoF(Es,params[1])
-            h,c,v0 = hcv0(f,y_data,y_err)
-            return h.*cos(f)+c*sin(f).+v0
+                
+        Es::Array{Float64} = kepler_solve!(M(t,params[2],params[3]),params[1])
+        f::Array{Float64} = EtoF(Es,params[1])
+                
+        h,c,v0 = hcv0(f,y_data,y_err)
+                                
+        return h.*cos(f)+c*sin(f).+v0
+                
         else
             return Inf
         end
     end
-    
-    function get_params(fit_obj::LsqFit.LsqFitResult{Float64}) #returns e,t_p,P,K,pomega,gamma
-        params::Array = fit_obj.param
-        Es::Array = kepler_solve!(M(x_data,params[2],params[3]), params[1])
-        f::Array = EtoF(Es,params[1])
-        h,c,v0 = hcv0(f,y_data,y_err)
-        return params[1],params[2],params[3],K(h,c),pomega(h,c),gamma(v0,K(h,c),params[1], pomega(h,c))
-    end
+            
+    return get_params(curve_fit(v_rad,x_data,y_data,(1.0./y_err.^2.0),[0.1,x_data[1],P_guesser(x_data,y_data)]),x_data,y_data,y_err)
         
-    return get_params(curve_fit(v_rad,x_data,y_data,(1.0./y_err.^2.0),[0.1,x_data[1],P_guesser(x_data,y_data)]))
-    
 end
 
 
+function get_v_rad_fit(times::Array,params::Array) 
+        
+    Es::Array{Float64} = kepler_solve!(M(times,params[2],params[3]),params[1])
+    f::Array{Float64} = EtoF(Es,params[1])             
+
+    h = params[4]*cosd(params[5])
+    c = -params[4]*sind(params[5])
+    v0 = params[6]+params[4]*params[1]*cosd(params[5])
+                
+    return h.*cos(f)+c*sin(f).+v0
+    
+end
 
 function eff_func(t,t0::Float64,r0::Float64,sma::Float64,ecc::Float64,t_p::Float64,P::Float64)
     Ms = M(t,t_p,P)
@@ -102,11 +118,22 @@ end
 
 
 
-function plot_RV(times::Array{Float64},rvs::Array{Float64},period::Float64)
+function plot_RV(times::Array{Float64},rvs::Array{Float64},period::Float64,errors::Array{Float64},lab::ASCIIString;col="blue")
     phase = mod(times, period)/period;
-    plot(phase, rvs, "o", ms=5)
-    xlim(-.05,1.05)
-    ylim(minimum(rvs)-abs(.1*minimum(rvs)),maximum(rvs)+abs(.1*maximum(rvs)))
-    xlabel("Phase")
-    ylabel("RV")
+    errorbar(phase, rvs, yerr = errors,color=col,fmt=".",label=lab)
+end
+
+function plot_RV(times::Array{Float64},rvs::Array{Float64},period::Float64,errors::Array{Float64};col="blue")
+    phase = mod(times, period)/period;
+    errorbar(phase, rvs, yerr = errors,color=col,fmt=".",)
+end
+
+function plot_RV(times::Array{Float64},rvs::Array{Float64},period::Float64,lab::ASCIIString;col="blue")
+    phase = mod(times, period)/period;
+    scatter(phase, rvs,marker="x",color=col,label=lab)
+end
+
+function plot_RV(times::Array{Float64},rvs::Array{Float64},period::Float64;col="blue")
+    phase = mod(times, period)/period;
+    scatter(phase,rvs,marker="x",color=col)
 end
