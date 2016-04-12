@@ -1,1 +1,1 @@
-Homework 2: RV Period solver, f & g
+Homework 2: RV Period solver, mystery planet, f & g
