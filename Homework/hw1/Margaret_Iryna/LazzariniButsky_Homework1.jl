@@ -1,7 +1,10 @@
-#@stest [[Kepler(M,ecc) for M in linspace(0,2pi,100)] for ecc in linspace(0,0.999,100)]
+#@stest [[Kepler(M,ecc) for M in linspace(0,20pi,1000)] for ecc in linspace(0,0.999,100)]
 
 function Kepler(M, e)
-    E_old = M
+    E_old = M + 0.85 * e
+    if(sin(M) < 0)
+      E_old = M - 0.85 * e
+    end
     epsilon = 1.0
     while epsilon > 1.0E-12
         g = E_old - e*sin(E_old) - M
