@@ -33,7 +33,7 @@ best_period = agol_periodogram(numbers, collect(linspace(1.0, 365.0, 2000)))
 
 # Solve using curve_fit()
 P_best1, e_best1, tp_best1 = solve_rv([time rv err], alg="cf")
-#@stest solve_rv([time rv err], p0=[115.0, 0.2, 100.0], alg="cf")
+#@stest solve_rv([time rv err], alg="cf")
 
 # Solve using optimize()
 P_best2, e_best2, tp_best2 = solve_rv([time rv err], alg="opt")
