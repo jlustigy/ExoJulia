@@ -19,5 +19,5 @@ function r_from_f(a::Float64, ecc::Float64, f::Float64)
 end
 
 function f_from_M(ecc::Float64, M::Float64)
-    f_from_E!(ExoJulia.Orbit.kepler_solve!(M, ecc), ecc)
+    f_from_E(ExoJulia.Orbit.kepler_solve!(M, ecc), ecc)
 end
