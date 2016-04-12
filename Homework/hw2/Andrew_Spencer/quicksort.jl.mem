@@ -1,0 +1,74 @@
+        - # QUICKSORT FOR A traditional row-based array with multiple columns
+        - function quicksort2D(a)#,left,right)
+        -     
+        -  #   lena = length(a[:,1])
+  8774076     a0 = zeros(Float64,1,length(a[:,1]))
+        -     
+    14640     if(length(a[:,1]) < 2)
+        0         return a
+        -     end
+        -     
+    14544     if(length(a[:,1]) == 2)
+        0         if(a[1,1] > a[2,1])
+        0             a0 = a[1,:]
+        0             a[1,:] = a[2,:]
+        0             a[2,:] = a0
+        -         end
+        0         return a
+        -     end
+        -          
+     8976     if(length(a[:,1]) > 2)
+     8976         pivot = a[div(length(a[:,1]),2)]
+        0         i = 1
+     8976         j = length(a[:,1])
+        - 
+        0         while(i <= j)
+        -             
+        0             while(a[i,1] < pivot)
+        0                 i = i + 1
+        -             end
+        -             
+        0             while(a[j,1] > pivot)
+        0                 j = j - 1
+        -             end
+        - 
+        0             if(i <= j)
+    11088                 a0 = a[i,:]
+    11088                 a[i,:] = a[j,:]
+        0                 a[j,:] = a0
+        0                 i = i + 1
+        0                 j = j - 1
+        -             end
+        -         end
+        - 
+     1856         a[1:i,:] = quicksort2D(a[1:i,:])
+     1856         a[i:end,:] = quicksort2D(a[i:end,:]) 
+        - 
+        -     end
+        -    
+        0     return a
+        -     
+        - end
+        - 
+        - function run_quicksort()
+        - 
+        - #Data import
+118441192 pldata = readdlm("mystery_planet.txt")
+  2232817 time_data = pldata[:,1]
+      560 RV_data = pldata[:,2]
+      560 err_data = pldata[:,3]
+        - 
+        - #Sort by phase, given period
+    52631 phase = Array(Real,length(time_data))
+        0 period = 10.
+   334986 phase = mod(time_data,period)
+        - 
+   679687 newsorted1 = [phase RV_data]
+        0 data = quicksort2D(newsorted1)
+        - 
+ 20720347 println(data)
+        - 
+        - end
+        - 
+        - run_quicksort()
+        - 
