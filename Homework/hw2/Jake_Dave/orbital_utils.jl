@@ -11,7 +11,7 @@ function mean_anomaly(P::Float64, t::Float64, t0::Float64)
 end
 
 function f_from_E(E::Float64, ecc::Float64)
-    2.0 * atan2(sqrt(1.0 - ecc) * cos(E/2.0), sqrt(1.0 + e) * sin(E/2.0))
+    2.0 * atan2(sqrt(1.0 - ecc) * cos(E/2.0), sqrt(1.0 + ecc) * sin(E/2.0))
 end
 
 function r_from_f(a::Float64, ecc::Float64, f::Float64)
