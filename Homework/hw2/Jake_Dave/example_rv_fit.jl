@@ -4,7 +4,7 @@
 #
 # Note: This file is designed to be ran from the
 #       Homework/ directory and is furnished with
-#       @stest pointers. 
+#       @stest pointers.
 #
 ###########################
 
@@ -37,7 +37,6 @@ P_best1, e_best1, tp_best1 = solve_rv([time rv err], alg="cf")
 
 # Solve using optimize()
 P_best2, e_best2, tp_best2 = solve_rv([time rv err], alg="opt")
-#@stest solve_rv([time rv err], p0=[115.0, 0.2, 100.0], alg="opt")
 
 #=
 print("~~~~~~~~ curve_fit() ~~~~~~~~\n")
