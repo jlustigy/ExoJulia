@@ -49,3 +49,13 @@ function argmin(x::Array{Float64,1}; MIN::Float64=1.0e-10)
         end
     end
 end
+
+
+function loglike(data, model, err)
+    # Chi^2
+    ll = 0.0;
+    for i=1:length(data)
+        ll -= 0.5 * (data[i] - model[i])^2 / (err[i])^2;
+    end
+    return ll
+end 
