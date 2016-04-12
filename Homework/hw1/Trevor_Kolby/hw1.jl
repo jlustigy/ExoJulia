@@ -1,5 +1,6 @@
 #.jl version of hw1.ipynb
-#@stest newtons(g,g_prime,E0(1.23456),0.5,1.23456)
+# stest [[newtons(g,g_prime,E0(M),ecc,M) for M in linspace(0,20pi,1000)] for ecc in linspace(0,0.999,100)]
+#@stest [[newtons(E0(M),ecc,M) for M in linspace(0,20pi,1000)] for ecc in linspace(0,0.999,100)]
 
 
 # From time to M
@@ -24,14 +25,15 @@ end
 E0(m::Float64) = m + 0.85*sign(sin(m))
 
 #Newtons takes g, g', a guess at E0 to make the g(E0)=0 and the parameters to the function. delta can be specified depending on your machine's precision. Output is the true E
-function newtons(f::Function,f_prime::Function,E_0::Float64,e::Float64,m::Float64;delta=1e-14)
+#function newtons(f::Function,f_prime::Function,E_0::Float64,e::Float64,m::Float64;delta=1e-12)
+function newtons(E_0::Float64,e::Float64,m::Float64;delta=1e-12)
     
     E_new = E_0
     dE = 1.
-    
     while abs(dE)>delta
         E_old = E_new
-        E_new = E_old - (f(E_old,e,m)/f_prime(E_old,e))
+#        E_new = E_old - (f(E_old,e,m)/f_prime(E_old,e))
+        E_new = E_old -  (E_old - e*sin(E_old) - m)/(1.0 - e*cos(E_old))
         dE = E_new-E_old
     end
     
@@ -67,7 +69,8 @@ function orbit(e::Float64,sma::Float64,period::Float64;numpoints=1000)
     
     for time in times
         em = M(time,0.,period)
-        E = newtons(g,g_prime,E0(em),e,em)
+#        E = newtons(g,g_prime,E0(em),e,em)
+        E = newtons(E0(em),e,em)
         push!(fs,EtoF(E,e))
         push!(rs,EtoR(E,e,sma))
     end

@@ -12,7 +12,7 @@ data = readdlm(string(pwd(), "/hw2/Trevor_Kolby/mystery_planet.txt"),Float64) ;
 
 times = data[:,1]
 RVs = data[:,2]
-RV_errs = data[:,3] 
+RV_errs = data[:,3]
 
 #@stest fit_RV(times,RVs,RV_errs)
 
@@ -40,7 +40,7 @@ end
 function kepler_solve!(Ms::Array{Float64},ecc::Float64)
     results = Float64[]
     for em in Ms
-        push!(results,ExoJulia.Orbit.kepler_solve!(em, ecc))
+        push!(results,ExoJulia.Orbit.kepler_solve(em, ecc))
     end
     return results
 end
@@ -63,9 +63,14 @@ function get_params(fit_obj::LsqFit.LsqFitResult{Float64},x_data::Array,y_data::
 end
 
 function fit_RV(x_data::Array{Float64},y_data::Array{Float64},y_err::Array{Float64})
+<<<<<<< HEAD
       
     function v_rad(t::Array{Float64},params::Array{Float64})
                        
+=======
+
+    function v_rad(t::Array{Float64},params::Array{Float64}) #params are e,t_p,P
+>>>>>>> upstream/master
         if 0 <= params[1] < 1
                 
         Es::Array{Float64} = kepler_solve!(M(t,params[2],params[3]),params[1])
@@ -79,9 +84,23 @@ function fit_RV(x_data::Array{Float64},y_data::Array{Float64},y_err::Array{Float
             return Inf
         end
     end
+<<<<<<< HEAD
             
     return get_params(curve_fit(v_rad,x_data,y_data,(1.0./y_err.^2.0),[0.1,x_data[1],P_guesser(x_data,y_data)]),x_data,y_data,y_err)
         
+=======
+
+    function get_params(fit_obj::LsqFit.LsqFitResult{Float64}) #returns e,t_p,P,K,pomega,gamma
+        params::Array = fit_obj.param
+        Es::Array = kepler_solve!(M(x_data,params[2],params[3]), params[1])
+        f::Array = EtoF(Es,params[1])
+        h,c,v0 = hcv0(f,y_data,y_err)
+        return params[1],params[2],params[3],K(h,c),pomega(h,c),gamma(v0,K(h,c),params[1], pomega(h,c))
+    end
+
+    return get_params(curve_fit(v_rad,x_data,y_data,(1.0./y_err.^2.0),[0.1,x_data[1],P_guesser(x_data,y_data)]))
+
+>>>>>>> upstream/master
 end
 
 

@@ -54,4 +54,4 @@ function EccentricAnomaly(e, m, t)
   return f
 end
 
-#@stest [[EccentricAnomaly(ecc,M,0.00001) for M in linspace(0,2pi,100)] for ecc in linspace(0,0.999,100)]
+#@stest [[EccentricAnomaly(ecc,M,1e-12) for M in linspace(0,20pi,1000)] for ecc in linspace(0,0.999,100)]

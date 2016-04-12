@@ -7,7 +7,7 @@
 #
 ############################
 
-#@stest [[keplerEquation(M,ecc) for M in linspace(0,2pi,100)] for ecc in linspace(0,0.999,100)]
+#@stest [[keplerEquation(M,ecc) for M in linspace(0,20pi,1000)] for ecc in linspace(0,0.999,100)]
 
 function keplerEquation(M::Float64, e::Float64;TOL::Float64=1.0e-12)
     # Given mean anomaly M in radians and eccentricity e, return the eccentric anomoly

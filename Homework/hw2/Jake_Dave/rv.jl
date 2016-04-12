@@ -5,16 +5,16 @@
 #
 ######################
 
-function v_semi_amp!(P::Float64, ecc::Float64, inc::Float64, Mp::Float64, Ms::Float64)
-    (2.0pi / (P * (1.0 - e*e)^(3./2.)) * (Mp*sin(inc))^3 / (Mp + Ms)^2)^(1./3.)
+function v_semi_amp(P::Float64, ecc::Float64, inc::Float64, Mp::Float64, Ms::Float64)
+    (2.0pi * 6.67259e-8 / (P * (1.0 - e*e)^(3./2.)) * (Mp*sin(inc))^3 / (Mp + Ms)^2)^(1./3.)
 end
 
-function v_rad!(K::Float64, w::Float64, f::Float64, ecc::Float64, gamma::Float64)
+function v_rad(K::Float64, w::Float64, f::Float64, ecc::Float64, gamma::Float64)
     K * (cos(w+f) + e*sin(w)) + gamma
 end
 
-function v_rad_lin!(h::Float64, f::Float64, c::Float64, v0::Float64)
-    h*cos(f) + c*sin(f) + v0
+function v_rad_lin(h::Float64, f::Float64, c::Float64, v0::Float64, t::Float64, t0::Float64, d::Float64)
+    h*cos(f) + c*sin(f) + v0 + d*(t-t0)
 end
 
 function agol_periodogram(numbers::Array{Float64,2}, periods::Array{Float64,1})
