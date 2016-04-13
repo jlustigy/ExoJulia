@@ -74,7 +74,7 @@ function get_optimal_rv_parameters(data, numPlanets)
         global g_p = p
         global g_ecc = ecc
 
-        fit = curve_fit(linear_rv, time, rv, 1./err.^2, p0);
+        fit = curve_fit(linear_rv, time, rv, p0);
 
         fit_amt = norm(fit.param - p0);
 
@@ -103,6 +103,34 @@ function linear_rv(time, p)
   end
   return rv
 end
+
+"""
+    estimate_period(time, rv, min_p, max_p)
+
+Estimate the orbital period from the Agol method.
+"""
+function estimate_period(time, rv, min_p, max_p)
+  period = 0
+  prev = Inf
+  for p in linspace(min_p, max_p, 1000)
+    sum = 0
+    data_temp = zeros(Float64, length(time), 2)
+    data_temp[:,1] = mod(time,p)
+    data_temp[:,2] = rv
+    sorted = sortrows(data_temp, by=x->x[1])
+
+    for i=2:length(time)
+      sum += (data_temp[i][1] - data_temp[i-1][1])^2
+    end
+
+    if sum < prev
+      prev = sum
+      period = p
+    end
+  end
+  return period
+end
+
 
 
 function test()
