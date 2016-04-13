@@ -29,6 +29,9 @@ data.
 
 #Arguments
 * `data::Array{Float64,3}`: an Nx3 array of data with format [time; RV; error]
+
+#Return
+* best_params   An array containing [period, ecc, tp, h, c, v0]
 """
 function get_optimal_rv_parameters(data, numPlanets)
   #TODO use Eric's algorithm to guess P
@@ -39,6 +42,8 @@ function get_optimal_rv_parameters(data, numPlanets)
 
   F = zeros(Float64,numPlanets*2+2,length(time)); #TODO, should 4 be passed in?
 
+  best_params = [0,0,0,0,0,0]
+  cur_best = Inf
   for p=100:150 #should be based on guess
     for ecc=0:0.5
       for tp=1:p
@@ -58,7 +63,7 @@ function get_optimal_rv_parameters(data, numPlanets)
         epsilon = inv(F * W * (F'));
 
         #calculate beta which gives {h, c, v0, d}
-        #TODO this should depend on the numPlanets?
+        #TODO this should depend on the numPlanets
         beta = rv' * W * (F') * epsilon
         h = beta[1]
         c = beta[2]
@@ -69,31 +74,42 @@ function get_optimal_rv_parameters(data, numPlanets)
         global g_p = p
         global g_ecc = ecc
 
-        fit = curve_fit(linear_rv, time, rv, 1./err.^2, p0)
+        fit = curve_fit(linear_rv, time, rv, 1./err.^2, p0);
 
-        println(fit)
+        fit_amt = norm(fit.param - p0);
 
-        return
-
+        if fit_amt < cur_best
+          cur_best = fit_amt
+          best_params = [p,ecc,tp,h,c,v0]
+        end
       end
     end
   end
+  return best_params
 end
 
+"""
+    linear_rv(time, p)
 
+For each time value calculate the model RV values for the given h, c, and v0
+values in p.
+"""
 function linear_rv(time, p)
-  rv = []
-  for t in time
-    ma = 2pi/g_p*(t-g_tp); #calculate the mean anomaly
+  rv = zeros(Float64, length(time))
+  for i=1:length(time)
+    ma = 2pi/g_p*(time[i]-g_tp); #calculate the mean anomaly
     f = true_anomaly(g_ecc,ma); #get the true anomaly
-    val = p[1]*cos(f)+p[2]*sin(f)+p[3]
-    push!(rv, val)
+    rv[i] = p[1]*cos(f)+p[2]*sin(f)+p[3]
   end
   return rv
 end
 
 
+function test()
+  data =  readdlm("./mystery_planet.txt")
+  result = get_optimal_rv_parameters(data,1);
+  println("-----------------------------------")
+  println("optimal values are:\nperiod=$(result[1]) days\necc=$(result[2])\ntp=$(result[3])")
+end
 
-
-data =  readdlm("./mystery_planet.txt")
-get_optimal_rv_parameters(data)
+#@stest test()
