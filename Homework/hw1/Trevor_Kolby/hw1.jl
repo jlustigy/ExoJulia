@@ -32,8 +32,8 @@ function newtons(E_0::Float64,e::Float64,m::Float64;delta=1e-12)
     dE = 1.
     while abs(dE)>delta
         E_old = E_new
-#        E_new = E_old - (f(E_old,e,m)/f_prime(E_old,e))
-        E_new = E_old -  (E_old - e*sin(E_old) - m)/(1.0 - e*cos(E_old))
+        E_new = E_old - (g(E_old,e,m)/g_prime(E_old,e))
+#        E_new = E_old -  (E_old - e*sin(E_old) - m)/(1.0 - e*cos(E_old))
         dE = E_new-E_old
     end
     
