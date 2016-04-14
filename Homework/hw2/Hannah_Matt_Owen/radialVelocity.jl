@@ -17,7 +17,7 @@ Calculate the true anomaly from the given eccentricity and mean anomaly.
 """
 function true_anomaly(ecc::Float64, m::Float64)
   #tan(f/2)=sqrt((1+e)/(1-e))*tan(ea/2)
-  ea = ExoJulia.Orbit.kepler_solve(m,ecc)
+  ea = ExoJulia.Orbit.kepler_solve!(m,ecc)
   f = atan2(sqrt(1-ecc^2)*sin(ea),cos(ea)-ecc)
 end
 
@@ -29,22 +29,23 @@ data.
 
 #Arguments
 * `data::Array{Float64,3}`: an Nx3 array of data with format [time; RV; error]
+* `numPlanets::Int`: the number of planets in the system
+* `min_period::Float64`: the minimum period to guess
+* `max_period::Float64`: the maximum perdiod to guess
 
 #Return
 * best_params   An array containing [period, ecc, tp, h, c, v0]
 """
-function get_optimal_rv_parameters(data, numPlanets)
-  #TODO use Eric's algorithm to guess P
-
+function get_optimal_rv_parameters(data, numPlanets, min_period, max_period)
   time = data[:,1];
   rv = data[:,2];
   err = data[:,3];
 
-  F = zeros(Float64,numPlanets*2+2,length(time)); #TODO, should 4 be passed in?
+  F = zeros(Float64,numPlanets*2+2,length(time));
 
   best_params = [0,0,0,0,0,0]
   cur_best = Inf
-  for p=100:150 #should be based on guess
+  for p=min_period:max_period
     for ecc=0:0.5
       for tp=1:p
         #initialize F
@@ -135,9 +136,9 @@ end
 
 function test()
   data =  readdlm("./mystery_planet.txt")
-  result = get_optimal_rv_parameters(data,1);
+  result = get_optimal_rv_parameters(data,1,100,150);
   println("-----------------------------------")
   println("optimal values are:\nperiod=$(result[1]) days\necc=$(result[2])\ntp=$(result[3])")
 end
 
-#@stest test()
+#@stest get_optimal_rv_parameters(data,1,100,150);
