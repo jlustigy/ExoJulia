@@ -102,9 +102,9 @@ function solve_rv(data::Array{Float64, 2}; p0=[nothing, nothing, nothing], alg::
     =#
 
     # Unpack RV data (make global?)
-    time = data[:,1];
-    rv = data[:,2];
-    err = data[:,end];
+    global time = data[:,1];
+    global rv = data[:,2];
+    global err = data[:,end];
 
     # Set initial parameters if not specified
     p = [0.0, 0.0, 0.0]

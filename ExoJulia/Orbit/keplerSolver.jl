@@ -5,9 +5,9 @@
 # Solves Kepler's equation for an elliptical orbit.
 #
 
-#@stest [[kepler_solve!(M,ecc) for M in linspace(0,2pi,100)] for ecc in linspace(0,0.999,100)]
+#@stest [[kepler_solve(M,ecc) for M in linspace(0,2pi,100)] for ecc in linspace(0,0.999,100)]
 
-function kepler_solve!(M::Float64,ecc::Float64)
+function kepler_solve(M::Float64,ecc::Float64)
 #
 # Input:
 #  M  mean anomaly = n(t-t0) = 2\pi/P*(t-t0), where P is period, n
