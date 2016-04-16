@@ -1,7 +1,7 @@
 # Add ExoJulia/ to path
 push!(LOAD_PATH, "../../../ExoJulia")
 using ExoJulia
-using LsqFit
+include("./curve_fit.jl")
 
 """
     true_anomaly(ecc::Float64, m::Float64)
@@ -46,7 +46,7 @@ function get_optimal_rv_parameters(data, numPlanets, min_period, max_period)
   best_params = [0,0,0,0,0,0]
   cur_best = Inf
   for p=min_period:max_period
-    for ecc=0:0.5
+    for ecc in linspace(0,0.5,50)
       for tp=1:p
         #initialize F
         for j=1:length(time)
@@ -71,11 +71,10 @@ function get_optimal_rv_parameters(data, numPlanets, min_period, max_period)
         v0 = beta[end-1]
 
         p0 = [h,c,v0]
-        global g_tp = tp
-        global g_p = p
-        global g_ecc = ecc
 
-        fit = curve_fit(linear_rv, time, rv, p0);
+        data = [tp, p ,ecc]
+
+        fit = curve_fit(linear_rv, time, rv, 1./err.^2, p0, data);
 
         fit_amt = norm(fit.param - p0);
 
@@ -95,11 +94,11 @@ end
 For each time value calculate the model RV values for the given h, c, and v0
 values in p.
 """
-function linear_rv(time, p)
+function linear_rv(time, p, data)
   rv = zeros(Float64, length(time))
   for i=1:length(time)
-    ma = 2pi/g_p*(time[i]-g_tp); #calculate the mean anomaly
-    f = true_anomaly(g_ecc,ma); #get the true anomaly
+    ma = 2pi/data[2]*(time[i]-data[1]); #calculate the mean anomaly
+    f = true_anomaly(data[3],ma); #get the true anomaly
     rv[i] = p[1]*cos(f)+p[2]*sin(f)+p[3]
   end
   return rv
@@ -135,10 +134,12 @@ end
 
 
 function test()
+  global test_var = 1.5
   data =  readdlm("./mystery_planet.txt")
   result = get_optimal_rv_parameters(data,1,100,150);
   println("-----------------------------------")
   println("optimal values are:\nperiod=$(result[1]) days\necc=$(result[2])\ntp=$(result[3])")
 end
 
+test()
 #@stest get_optimal_rv_parameters(data,1,100,150);
