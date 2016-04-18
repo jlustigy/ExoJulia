@@ -36,7 +36,7 @@ P_best1, e_best1, tp_best1 = solve_rv([time rv err], alg="cf")
 #@stest solve_rv([time rv err], alg="cf")
 
 # Solve using optimize()
-P_best2, e_best2, tp_best2 = solve_rv([time rv err], alg="opt")
+#P_best2, e_best2, tp_best2 = solve_rv([time rv err], alg="opt")
 
 #=
 print("~~~~~~~~ curve_fit() ~~~~~~~~\n")
