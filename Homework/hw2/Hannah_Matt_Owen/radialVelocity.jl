@@ -1,7 +1,7 @@
 # Add ExoJulia/ to path
 push!(LOAD_PATH, "../../../ExoJulia")
 using ExoJulia
-using LsqFit
+include("./curve_fit.jl")
 
 
 """
@@ -46,9 +46,11 @@ function get_optimal_rv_parameters(data, numPlanets, min_period, max_period)
 
   best_params = [0,0,0,0,0,0]
   cur_best = Inf
+
   for p in linspace(min_period,max_period,10)
     for ecc in linspace(0,0.5,10)
       for tp in linspace(0,p,round(p)) #in day increments
+
         #initialize F
         for j=1:length(time)
           ma = 2pi/p*(time[j]-tp); #calculate the mean anomaly
