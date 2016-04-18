@@ -3,6 +3,7 @@ push!(LOAD_PATH, "../../../ExoJulia")
 using ExoJulia
 using LsqFit
 
+
 """
     true_anomaly(ecc::Float64, m::Float64)
 
@@ -45,9 +46,9 @@ function get_optimal_rv_parameters(data, numPlanets, min_period, max_period)
 
   best_params = [0,0,0,0,0,0]
   cur_best = Inf
-  for p=min_period:max_period
-    for ecc=0:0.5
-      for tp=1:p
+  for p in linspace(min_period,max_period,10)
+    for ecc in linspace(0,0.5,10)
+      for tp in linspace(0,p,round(p)) #in day increments
         #initialize F
         for j=1:length(time)
           ma = 2pi/p*(time[j]-tp); #calculate the mean anomaly
@@ -71,11 +72,24 @@ function get_optimal_rv_parameters(data, numPlanets, min_period, max_period)
         v0 = beta[end-1]
 
         p0 = [h,c,v0]
-        global g_tp = tp
-        global g_p = p
-        global g_ecc = ecc
 
-        fit = curve_fit(linear_rv, time, rv, p0);
+        """
+            linear_rv(time, p)
+
+        For each time value calculate the model RV values for the given h, c, and v0
+        values in p.
+        """
+        function linear_rv(time, vals)
+          rv = zeros(Float64, length(time))
+          for i=1:length(time)
+            ma = 2pi/p*(time[i]-tp); #calculate the mean anomaly
+            f = true_anomaly(ecc,ma); #get the true anomaly
+            rv[i] = vals[1]*cos(f)+vals[2]*sin(f)+vals[3]
+          end
+          return rv
+        end
+
+        fit = curve_fit(linear_rv, time, rv, 1./err.^2, p0);
 
         fit_amt = norm(fit.param - p0);
 
@@ -89,21 +103,7 @@ function get_optimal_rv_parameters(data, numPlanets, min_period, max_period)
   return best_params
 end
 
-"""
-    linear_rv(time, p)
 
-For each time value calculate the model RV values for the given h, c, and v0
-values in p.
-"""
-function linear_rv(time, p)
-  rv = zeros(Float64, length(time))
-  for i=1:length(time)
-    ma = 2pi/g_p*(time[i]-g_tp); #calculate the mean anomaly
-    f = true_anomaly(g_ecc,ma); #get the true anomaly
-    rv[i] = p[1]*cos(f)+p[2]*sin(f)+p[3]
-  end
-  return rv
-end
 
 """
     estimate_period(time, rv, min_p, max_p)
@@ -136,9 +136,10 @@ end
 
 function test()
   data =  readdlm("./mystery_planet.txt")
-  result = get_optimal_rv_parameters(data,1,100,150);
+  result = get_optimal_rv_parameters(data,1,110,120);
   println("-----------------------------------")
   println("optimal values are:\nperiod=$(result[1]) days\necc=$(result[2])\ntp=$(result[3])")
 end
 
+test()
 #@stest get_optimal_rv_parameters(data,1,100,150);
