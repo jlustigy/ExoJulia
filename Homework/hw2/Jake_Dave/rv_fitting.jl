@@ -111,7 +111,7 @@ function solve_rv(data::Array{Float64, 2}; p0=[nothing, nothing, nothing], alg::
     if p0[1] == nothing
         # Use Agol Periodogram for initial period guess
         periods = collect(linspace(minimum(time[2:end] - time[1:end-1]), time[end]-time[1], 10000))
-        p[1] = agol_periodogram(numbers, periods)
+        p[1] = agol_periodogram(data, periods)
     else
         p[1] = p0[1]
     end
