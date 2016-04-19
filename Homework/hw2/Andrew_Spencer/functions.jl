@@ -2,7 +2,7 @@
 # ecc = eccentricity
 # E = eccentric anomaly
 # M = mean motion  "$HW" == "./$1"
-#@stest time_rv()
+### @stest time_rv()
 
 ### Define necessary functions ###
 
@@ -208,7 +208,7 @@ using LsqFit
 function time_rv()
 
     # Required packages
-    using LsqFit
+    #using LsqFit
 
     #Data import
     pldata = readdlm("./hw2/Andrew_Spencer/mystery_planet.txt")
