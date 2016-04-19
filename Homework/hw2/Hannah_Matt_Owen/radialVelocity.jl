@@ -5,6 +5,35 @@ using LsqFit
 
 
 """
+estimate_period(time, rv, min_p, max_p, num_points)
+
+Estimate the orbital period from the Agol method.
+"""
+function estimate_period(time, rv, min_p, max_p, num_points)
+  period = 0
+  prev = Inf
+    for p in linspace(min_p, max_p, num_points)
+    sum = 0
+    data_temp = zeros(Float64, length(time), 2)
+    data_temp[:,1] = mod(time,p)
+    data_temp[:,2] = rv
+    sorted = sortrows(data_temp, by=x->x[1])
+
+    for i=2:length(time)
+        sum += (sorted[i,2] - sorted[i-1,2])^2
+    end
+
+    if sum < prev
+      prev = sum
+      period = p
+    end
+  end
+  return period
+end
+
+
+
+"""
     true_anomaly(ecc::Float64, m::Float64)
 
 Calculate the true anomaly from the given eccentricity and mean anomaly.
@@ -43,7 +72,7 @@ function get_optimal_rv_parameters(data, period_guess; numPlanets::Int=1)
   err = data[:,3];
 
 
-  p0 = [period_guess, 0.0001, rand(time)] #[period ecc tp]
+  p0 = [period_guess, 0.5, rand(time)] #[period ecc tp]
   function model_rv(time, vals)
     #vals format [period ecc tp]
     F = zeros(Float64,numPlanets*2+2,length(time));
@@ -85,11 +114,15 @@ end
 
 function test()
   data =  readdlm("./mystery_planet.txt")
-  result = get_optimal_rv_parameters(data,120);
-  println("-----------------------------------")
-  println(result)
-  println("optimal values are:\nperiod=$(result[1]) days\necc=$(result[2])\ntp=$(result[3])")
+  time = data[:,1];
+  rv = data[:,2];
+  p_guess = estimate_period(time, rv, 100, 150, 10000)
+  result = get_optimal_rv_parameters(data,p_guess);
+  # println("-----------------------------------")
+  # println(p_guess)
+  # println(result)
+  # println("optimal values are:\nperiod=$(result[1]) days\necc=$(result[2])\ntp=$(result[3])")
 end
 
-test()
+# test()
 #@stest test()
