@@ -41,45 +41,103 @@ transit (no grazing).
 * `time::Array{Float64,1}`: an array containing N time points
 * `flux::Array{Float64,1}`: an array containing N flux measurements
 * `err::Array{Float64,1}`: an array containing N error measurements
+* `trasnitTimeLimit::Float64=1.0`: the limit on transit duration
 
 #Return
 * `params:Array{Float64,1}`: an array of the best fit parameters
                              [t0, p, v, k, b, f0]
 """
-function get_transit_parameters(time, flux, err)
-  #params format: [t0, p, v, k, b, f0]
-  params = [0.0, length(time)/5.5, 0.5, 0.005, 0.01, mean(flux)] #initial guesses
+function get_transit_parameters(time, flux, err; trasnitTimeLimit=1.0)
+  #params format: [v, k, b]
+  params = [1.0, 0.01, 0.1] #initial guesses
+
+  p, t0, f0 = initial_values(time, flux, trasnitTimeLimit)
 
   #closure function called by curve_fit
   function model_transit(time, params)
-    t0, p, v, k, b, f0 = params
-    p = Int(floor(p)) #make sure p is an integer for our loops
+    v, k, b = params
+
+    #Curve fit isn't that great and sometimes tries negative values for b...
+    if b < 0.0
+      params[3] = 0.0
+      b = 0.0
+    elseif b >= 1
+      params[3] = 0.9
+      b = 0.9
+    end
+
+
     #calculate the expected flux for each time point using the given
     #parameters.
     flux = zeros(Float64,length(time))
 
-    for i=1:p #the signal should repeat every period (p) samples
+    for i=1:length(time) #the signal should repeat every period (p) samples
       t = time[i]
-
-      dist = abs((1-b^2)^0.5-(t-t0)*v) #the distance between the planet and star centers
+      dist = ( b^2 + ( (1 - b^2)^0.5 - ( (t%p) - t0 )*v )^2 )^0.5 #the distance between the planet and star centers
       r_p = k #radius of planet in terms of stellar radii, k=r_p/r_s
       r_s = 1.0 #radius of star in units of stellar radii
       overlap = circle_overlap(dist, r_s, r_p) #percent of star covered
 
-      j = 0
-      while i+j*p <= length(time) #loop over all points in the period
-        flux[i+j*p] = f0*(1-overlap) #calculate the total flux
-        j+=1
-      end
+
+      flux[i] = f0*(1-overlap) #calculate the total flux
     end
     return flux
   end
 
   fit = curve_fit(model_transit, time, flux, 1./err.^2, params)
-  t0, p, v, k, b, f0 = fit.param
-  #p is in units of samples, convert to days
-  p = p*(time[2]-time[1])
+  v, k, b = fit.param
+
   return [t0, p, v, k, b, f0]
+end
+
+
+"""
+    initial_values(time, flux)
+Find the perdiod (p), time of first transit (t0), and and unocculted flux
+level (f0) that best match the provided data values.
+
+#Return
+* `vals::Array{Float64,1}`: array containing [p, t0, f0]
+"""
+function initial_values(time, flux, trasnitTimeLimit)
+  avg_f_val = mean(flux)
+  min = minimum(flux)
+
+  t0 = -1.0 #initialize to -1.0
+  p_vals = []
+  f0_avg = []
+
+
+  for i=1:length(time)
+    if abs(flux[i]-avg_f_val)*0.5 > abs(flux[i]-min)
+      #closer to the min, we're in a dip
+      if -1.0 == t0
+        #this is the first dip, set t0
+        t0 = time[i]
+      end
+
+      #check if this is our first entry into this transit
+
+      if length(p_vals)==0 || trasnitTimeLimit < time[i] - p_vals[end]
+        push!(p_vals, time[i])
+      end
+
+    else
+      #this is not a transit, push the value to our f0 avg array
+      push!(f0_avg, flux[i])
+    end
+  end
+
+  #loop over the p vals to find the average p
+  p_sum = 0.0
+  for i=1:length(p_vals)-1
+    p_sum += p_vals[i+1] - p_vals[i]
+  end
+  p = p_sum/(length(p_vals)-1)
+
+  f0 = mean(f0_avg)
+
+  return [p, t0, f0]
 end
 
 
@@ -91,9 +149,17 @@ function read_data_file(filepath)
   return (time, flux, err)
 end
 
-time, flux, err = read_data_file("mystery_planet2.txt")
-t0, p, v, k, b, f0 =  get_transit_parameters(time, flux, err)
-println("Got t0=$(t0), p=$(p), v=$(v), k=$(k), b=$(b), f0=$(f0)")
 
-plot(time,flux)
-show()
+
+function test()
+  time, flux, err = read_data_file("mystery_planet2.txt")
+  t0, p, v, k, b, f0 =  get_transit_parameters(time, flux, err)
+  println("Got t0=$(t0), p=$(p), v=$(v), k=$(k), b=$(b), f0=$(f0)")
+
+  plot(time,flux)
+  show()
+end
+
+test()
+
+#@stest test()
