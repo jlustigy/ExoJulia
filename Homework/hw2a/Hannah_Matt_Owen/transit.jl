@@ -45,31 +45,35 @@ transit (no grazing).
 
 #Return
 * `params:Array{Float64,1}`: an array of the best fit parameters
-                             [t0, p, v, k, b, f0]
+                             [p, t0, f0, k, b, v]
 """
 function get_transit_parameters(time, flux, err; trasnitTimeLimit=1.0)
-  #params format: [v, k, b]
-  params = [1.0, 0.01, 0.1] #initial guesses
 
-  p, t0, f0 = initial_values(time, flux, trasnitTimeLimit)
+
+  p, t0, f0, k, b, v = initial_values(time, flux, trasnitTimeLimit)
+
+  #params format: [p, t0, f0, k, b, v]
+  params = [p, t0, f0, k, b, v] #initial guesses
+
+  #println("initial estimate: p=$(p), t0=$(t0), f0=$(f0), k=$(k), b=$(b), v=$(v)")
 
   #closure function called by curve_fit
   function model_transit(time, params)
-    v, k, b = params
+    p, t0, f0, k, b, v = params
 
     #Curve fit isn't that great and sometimes tries negative values for b...
     if b < 0.0
-      params[3] = 0.0
+      params[5] = 0.0
       b = 0.0
     elseif b >= 1
-      params[3] = 0.9
+      params[5] = 0.9
       b = 0.9
     end
 
 
     #calculate the expected flux for each time point using the given
     #parameters.
-    flux = zeros(Float64,length(time))
+    model_flux = zeros(Float64,length(time))
 
     for i=1:length(time) #the signal should repeat every period (p) samples
       t = time[i]
@@ -79,25 +83,30 @@ function get_transit_parameters(time, flux, err; trasnitTimeLimit=1.0)
       overlap = circle_overlap(dist, r_s, r_p) #percent of star covered
 
 
-      flux[i] = f0*(1-overlap) #calculate the total flux
+      model_flux[i] = f0*(1-overlap) #calculate the total flux
     end
-    return flux
+    return model_flux
   end
 
   fit = curve_fit(model_transit, time, flux, 1./err.^2, params)
-  v, k, b = fit.param
+  p, t0, f0, k, b, v = fit.param
 
-  return [t0, p, v, k, b, f0]
+  #plot(time,flux, color="blue")
+  #plot(time, model_transit(time,fit.param), color="red")
+  #show()
+
+  return [p, t0, f0, k, b, v]
 end
 
 
 """
     initial_values(time, flux)
-Find the perdiod (p), time of first transit (t0), and and unocculted flux
+Guess values for the first transit (t0), period (p), sky velocity (v) in units of
+stellar radius/day, radius ratio (k), impact parameter (b), and unocculted flux
 level (f0) that best match the provided data values.
 
 #Return
-* `vals::Array{Float64,1}`: array containing [p, t0, f0]
+* `vals::Array{Float64,1}`: array containing [p, t0, f0, k, b, v]
 """
 function initial_values(time, flux, trasnitTimeLimit)
   avg_f_val = mean(flux)
@@ -106,10 +115,16 @@ function initial_values(time, flux, trasnitTimeLimit)
   t0 = -1.0 #initialize to -1.0
   p_vals = []
   f0_avg = []
+  b_vals = []
+  k = sqrt( (avg_f_val-min)/avg_f_val )
 
+  transit_lengths = []
+
+  previous_was_transit = false
 
   for i=1:length(time)
     if abs(flux[i]-avg_f_val)*0.5 > abs(flux[i]-min)
+      previous_was_transit = true
       #closer to the min, we're in a dip
       if -1.0 == t0
         #this is the first dip, set t0
@@ -120,13 +135,31 @@ function initial_values(time, flux, trasnitTimeLimit)
 
       if length(p_vals)==0 || trasnitTimeLimit < time[i] - p_vals[end]
         push!(p_vals, time[i])
+
+        #estimate b from the slope of the previous point to the current
+        if i > 1
+          temp_est = abs( ( flux[i] - flux[i-1] )/(time[i]-time[i-1]) )
+          b_est = 1 - temp_est/(1 + temp_est)
+          push!(b_vals, b_est)
+        end
       end
 
     else
       #this is not a transit, push the value to our f0 avg array
       push!(f0_avg, flux[i])
+
+      if previous_was_transit
+        previous_was_transit = false
+        push!(transit_lengths, time[i] - p_vals[end])
+      end
     end
   end
+
+  b = mean(b_vals)
+
+  #get the average transit time
+  T = mean(transit_lengths)
+  v = 2*(1-b^2)^0.5/T
 
   #loop over the p vals to find the average p
   p_sum = 0.0
@@ -137,7 +170,9 @@ function initial_values(time, flux, trasnitTimeLimit)
 
   f0 = mean(f0_avg)
 
-  return [p, t0, f0]
+  b = mean(b_vals)
+
+  return [p, t0, f0, k, b, v]
 end
 
 
@@ -153,11 +188,8 @@ end
 
 function test()
   time, flux, err = read_data_file("mystery_planet2.txt")
-  t0, p, v, k, b, f0 =  get_transit_parameters(time, flux, err)
+  p, t0, f0, k, b, v =  get_transit_parameters(time, flux, err)
   println("Got t0=$(t0), p=$(p), v=$(v), k=$(k), b=$(b), f0=$(f0)")
-
-  plot(time,flux)
-  show()
 end
 
 test()
