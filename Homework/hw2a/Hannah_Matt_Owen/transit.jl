@@ -192,6 +192,5 @@ function test()
   println("Got t0=$(t0), p=$(p), v=$(v), k=$(k), b=$(b), f0=$(f0)")
 end
 
-test()
 
 #@stest test()
