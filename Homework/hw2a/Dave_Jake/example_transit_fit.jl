@@ -1,5 +1,5 @@
 # Load in our functions
-push!(LOAD_PATH,"../../../ExoJulia/")
+push!(LOAD_PATH,"../ExoJulia/")
 push!(LOAD_PATH,".")
 
 include("../../hw2/Jake_Dave/utils.jl")
@@ -13,7 +13,7 @@ using ExoJulia
 using Optim
 
 # Load in data
-data = readdlm("mystery_planet2.txt");
+data = readdlm("../Resources/mystery_planet2.txt");
 time = data[:,1];
 flux = data[:,2];
 mean_flux = flux/median(flux)
@@ -23,14 +23,16 @@ function transit_fit_speed_test()
     # Estimate parameters
     #Returns est_params = [ dF, tT, tF, P, tE ]
     est_params = guess_params()
-    best_period = est_params[4];
-    best_tE = est_params[5];
+    global best_period = est_params[4];
+    global best_tE = est_params[5];
 
     # Fit using optim
     # params [ dF, tT, tF, P, tE ]
     params = est_params
     optimum = optimize(transit_loglike_observables_optim, params, iterations=5000, method=:bfgs)
 
+    best_optim = optimum.minimum
+    
     # Returns [P, dF, b_est, tT, rho_est]
     phys = observable_to_physical(best_optim)
     print("Best Fit Period: $(phys[1]) days.\n")
