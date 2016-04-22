@@ -42,6 +42,8 @@ function plot_results_full(pbest)
     scatter(time,mean_flux, color="blue", alpha=0.1)
     ylim(0.995,1.005)
     #xlim(0,2.5)
+    ylabel("Relative Flux")
+    xlabel("Days")
     
     show()
 end 
@@ -56,6 +58,9 @@ function plot_results_folded(pbest)
     scatter(data_fold[:,1],data_fold[:,2]/mean(data_fold[:,2]),color="blue",alpha=0.5)
     ylim(0.995,1.005)
     xlim(0.,1.5)
+    
+    ylabel("Relative Flux")
+    xlabel("Days")
     
     show()
 end

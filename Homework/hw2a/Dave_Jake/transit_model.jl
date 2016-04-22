@@ -75,8 +75,51 @@ function transit_model_observables(time::Array{Float64,1},params::Vector)
     return rel_flux
 end
 
-function guess_params()
+function estimate_guess(time::Array{Float64,1},flux::Array{Float64,1},period::Float64)
+    # Estimate 1st transit center
+    best_ind = argmin(abs(time-period))
+    toff_est_ind = argmin(flux[1:best_ind]) # <- this index ~ 1st transit center
     
-    print(time[1:5])
-    return -1
+    # Use this to estimate depth assuming i ~ 90 degrees
+    df_guess = 1.0 - flux[toff_est_ind]/mean(flux)
+    
+    return time[toff_est_ind], df_guess
+end
+
+function guess_params(;MIN_PERIOD=0.1,MAX_PERIOD=20.0,NUM=1000)
+    # Estimate best period
+    periods = collect(linspace(MIN_PERIOD,MAX_PERIOD,NUM))
+    best_period = agol_periodogram(data, periods)
+
+    # Estimate delta flux, central time of transit
+    best_tE, best_dF = estimate_guess(time,flux,best_period)
+    
+    # Estimate transit duration, transit flat time
+    best_tT = 0.025*best_period
+    best_tF = 0.8*best_tT
+
+    return [best_dF, best_tT, best_tF, best_period, best_tE]
+end
+
+function observable_to_physical(params::Vector)
+    #
+    #Observables in params
+    #-----------
+    #dF : Delta Flux = Rp/Rs
+    #tT : Transit Duration
+    #tF : Flat Duration 
+    #P  : Period 
+    #tE : Time of first transit
+    #
+    P = params[4]
+    dF = params[1]
+    tF = params[3]
+    tT = params[2]
+    
+    b_est = impact_parameter(dF, tF, tT, P)
+
+    rho_est = stellar_density(dF, tT, P, b_est) 
+    
+    return [P, dF, b_est, tT, rho_est]
+    
 end
