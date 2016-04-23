@@ -4,7 +4,7 @@
 # PI: Eric Agol
 # Written by: Andrew Lincowski & Spencer Wallace
 # University of Washington
-# Time-stamp: <transits.jl on Wednesday, 20 April, 2016 at 21:07:16 PDT (linc)>
+# Time-stamp: <transits.jl on Saturday, 23 April, 2016 at 12:45:09 PDT (linc)>
 
 # Need to change velocity of planet to duration of transit
 # Need to allow for impact parameter outside of star (still partial transit)
@@ -89,13 +89,14 @@ end
     # density of star
 
 
-function transit(delta,b,t,t0,v,period,base_flux)
+function transit(delta,b,t,t0,dur,period,base_flux)
     # delta = (Rpl/R*)^2
     # b = impact parameter
     # t = time
     # t0 = time of first contact
+    # dur = duration of transit
     # v = velocity
-    # period = period
+    # period = period of planet orbit
     
     # prevent bad parameters
     if (delta <= 0. || delta > 1.)
@@ -104,11 +105,9 @@ function transit(delta,b,t,t0,v,period,base_flux)
     elseif (b < 0. || b > (1.))
         #println("bad b")
         return typemax(Float64)
-    elseif (period < 4./v || t0 >= period || t0 < 0.)
-        #println("Bad period")
-        return typemax(Float64)
     end
     
+    v = 2*(sqrt(delta) + 1)*sqrt(1 - b*b)/dur
     t = mod(t,period)
     a = v*(t-t0)-sqrt(1-b^2)-sqrt(delta)
     r = sqrt(a*a+b*b)
@@ -126,13 +125,13 @@ function transit_model(x,p)
     delta = p[1]
     b = p[2]
     t0 = p[3]
-    v = p[4]
+    dur = p[4]
     period = p[5]
     base_flux = p[6]
     
     tr_arr = Array(Float64,length(x))
     for i in 1:length(x)
-        tr_arr[i] = transit(delta,b,x[i],t0,v,period,base_flux)
+        tr_arr[i] = transit(delta,b,x[i],t0,dur,period,base_flux)
     end
 
     return tr_arr
@@ -177,11 +176,11 @@ end
     delta = (maximum(flux_data)-minimum(flux_data))/maximum(flux_data)
     b = 0.1
     t0 = 0.1
-    v = 4./min_per + 1.0
+    dur = 1.0
     flux = mean(flux_data)
 
-    p = [delta,b,t0,v,min_per,flux] #period P from phase folding estimate
-    println("Guess parameters: p = [delta,b,t0,v,min_per,flux]")
+    p = [delta,b,t0,dur,min_per,flux] #period P from phase folding estimate
+    println("Guess parameters: p = [delta,b,t0,dur,min_per,flux]")
     for (idx, val) in enumerate(p)
         println(val)
     end
