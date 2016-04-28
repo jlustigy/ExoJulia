@@ -2,11 +2,80 @@
 # ecc = eccentricity
 # E = eccentric anomaly
 # M = mean motion  "$HW" == "./$1"
-### @stest time_rv()
+#@stest time_rv()
 
 ### Define necessary functions ###
 
 ### PLANET ORBITAL PERIOD ###
+
+
+using LsqFit
+
+
+
+function time_rv()
+
+    # Required packages
+    #using LsqFit
+
+    #Data import
+    pldata = readdlm("./hw2/Andrew_Spencer/mystery_planet.txt")
+    time_data = pldata[:,1]
+    global RV_data = pldata[:,2]
+    err_data = pldata[:,3]
+
+    #Probe useful parameter space for period of planet orbit
+    period = linspace(1,3500,100000)
+    sum = Array(Real,length(period))
+
+    for (j,P) in enumerate(period)
+        sum[j] = 0.0
+        
+        #Sort by phase, given period
+        phase = Array(Real,length(time_data))
+        phase = mod(time_data,P)
+        phase_data_arr = [phase RV_data] #combine arrays
+        phase_sorted = fastsortrows(phase_data_arr, [1]) #sort by phase
+        for i in 2:length(time_data)
+            sum[j] += (phase_sorted[i,2]-phase_sorted[i-1,2])*(phase_sorted[i,2]-phase_sorted[i-1,2])
+        end
+    end
+
+    min_index=indmin(sum)
+    P=period[min_index]
+
+    # Calculate phase-sorted RV data
+    sum = 0.0
+    #Sort by phase given period
+    phase = Array(Real,length(time_data))
+    phase = mod(time_data,P)
+    phase_data_arr = [phase RV_data] #combine arrays
+    phase_sorted = fastsortrows(phase_data_arr, [1]) #sort by phase
+    for i in 2:length(time_data)
+        sum += (phase_sorted[i,2]-phase_sorted[i-1,2])*(phase_sorted[i,2]-phase_sorted[i-1,2])
+    end
+
+    # Add relative path to ExoJulia this doesn't work (at least in Linux, v.0.4.5)
+    #push!(LOAD_PATH, "../../../ExoJulia/")
+
+    # import
+    # using ExoJulia
+
+    # The prescribed method for importing a module doesn't work in Linux apparently. Ubuntu Julia v.0.4.5
+    # So we must directly specify the include path.
+    include("/home/linc/Documents/SCHOOL/598_exoplanets/ExoJulia/ExoJulia/Orbit/orbit.jl")
+
+    # Initial values for curve_fit
+    ecc = 0.0
+    time_peri = 0.0 #presumably in days
+    p = [ecc,time_peri,P] #period P from phase folding estimate
+    global W = W_func(err_data) #Must be called W...
+
+    # Run fitting routine for eccentricity & time of periastron
+    fit = curve_fit(vrad_model,time_data,RV_data,err_data,[ecc,time_peri,P])
+    println(fit.param)
+end
+
 
 function find_period(time_data,RV_data,showplots=false)
     ### Finds the period of an RV dataset by minimizing sq residuals
@@ -203,61 +272,4 @@ function fastsortrows(B::AbstractMatrix,cols::Array; kws...)
     return B
 end
 
-using LsqFit
-
-function time_rv()
-
-    # Required packages
-    #using LsqFit
-
-    #Data import
-    pldata = readdlm("./hw2/Andrew_Spencer/mystery_planet.txt")
-    time_data = pldata[:,1]
-    RV_data = pldata[:,2]
-    err_data = pldata[:,3]
-
-    #Probe useful parameter space for period of planet orbit
-    period = linspace(1,3500,100000)
-    sum = Array(Real,length(period))
-
-    for (j,P) in enumerate(period)
-        sum[j] = 0.0
-        
-        #Sort by phase, given period
-        phase = Array(Real,length(time_data))
-        phase = mod(time_data,P)
-        phase_data_arr = [phase RV_data] #combine arrays
-        phase_sorted = fastsortrows(phase_data_arr, [1]) #sort by phase
-        for i in 2:length(time_data)
-            sum[j] += (phase_sorted[i,2]-phase_sorted[i-1,2])*(phase_sorted[i,2]-phase_sorted[i-1,2])
-        end
-    end
-
-    min_index=indmin(sum)
-    P=period[min_index]
-
-    # Calculate phase-sorted RV data
-    sum = 0.0
-    #Sort by phase given period
-    phase = Array(Real,length(time_data))
-    phase = mod(time_data,P)
-    phase_data_arr = [phase RV_data] #combine arrays
-    phase_sorted = fastsortrows(phase_data_arr, [1]) #sort by phase
-    for i in 2:length(time_data)
-        sum += (phase_sorted[i,2]-phase_sorted[i-1,2])*(phase_sorted[i,2]-phase_sorted[i-1,2])
-    end
-
-    # The prescribed method for importing a module doesn't work in Linux apparently. Ubuntu Julia v.0.4.5
-    # So we must directly specify the include path.
-    include("../ExoJulia/Orbit/orbit.jl")
-
-    # Initial values for curve_fit
-    ecc = 0.0
-    time_peri = 0.0 #presumably in days
-    p = [ecc,time_peri,P] #period P from phase folding estimate
-    W = W_func(err_data) #Must be called W...
-
-    # Run fitting routine for eccentricity & time of periastron
-    fit = curve_fit(vrad_model,time_data,RV_data,err_data,[ecc,time_peri,P])
-    fit.param
-end
+time_rv()
