@@ -1,14 +1,11 @@
 # Affine Invariant McEmcE == aimee
 # This module contains routines to run Affine-Invariant MCMC
 
-function chisq(x::Array{Float64,1},y::Array{Float64,1},err::Array{Float64,1},model::Function,params::Vector)
+function chisq(data::Array{Float64,2},model::Function,params::Vector)
     # Compute the simple chi-squared ln likelihood
-    
-    res = 0.0
-    
-    res = sum(((y .- model(x,y,err,params)).^2.0)./(err.*err))
-    
-    return res
+    # For simple case, data = [x y err]
+        
+    return sum(((data[:,2] .- model(data,params)).^2.0)./(data[:,3].^2))
 end
 
 # End Function
@@ -60,7 +57,7 @@ function affine_inv_mcmc(nsteps::Int,params::Vector,model::Function,errors::Vect
     par_trial = params 
     
     # Estimate best ln like from input params
-    ln_best = lnlike(x,y,err,model,par_trial)
+    ln_best = lnlike(data,model,par_trial)
     
     for j=1:nwalkers
         # Select from within uncertainties:
@@ -69,7 +66,7 @@ function affine_inv_mcmc(nsteps::Int,params::Vector,model::Function,errors::Vect
         # Only initiate models with reasonable ln like values:
         while ln_trial > (ln_best + 1000.0)
             par_trial = params + errors.*randn(nparam) 
-            ln_trial = lnlike(x,y,err,model,par_trial)
+            ln_trial = lnlike(data,model,par_trial)
         end
       
         ln_mcmc[j,1] = ln_trial
@@ -99,7 +96,7 @@ function affine_inv_mcmc(nsteps::Int,params::Vector,model::Function,errors::Vect
         par_trial = vec(z*par_mcmc[j,i-1,:]+(1.0-z)*par_mcmc[ipartner,i-1,:])
     
         # Compute model & chi-square:  
-        ln_trial = lnlike(x,y,err,model,par_trial)
+            ln_trial = lnlike(data,model,par_trial)
     
         # Next, determine whether to accept this trial step:
         alp = z^(nparam-1)*exp(-0.5*(ln_trial - ln_mcmc[j,i-1]))
