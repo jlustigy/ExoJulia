@@ -43,7 +43,7 @@ e.g. if you write a module over the course of a few days, it's nice to push to g
 2. Add, commit, push to your online fork (if you've made changes on your fork):
 
   ```bash
-  git add -A
+  git add .
   git commit -am "Message"
   git push origin master
   ```
@@ -53,7 +53,7 @@ e.g. if you write a module over the course of a few days, it's nice to push to g
 4. **Add, commit, push** to your remote branch:
   
   ```bash
-  git add -A
+  git add .
   git commit -am "Message"
   git push origin master
   ```
