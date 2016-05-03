@@ -16,3 +16,8 @@ which will show plots of flux & the derivative of the
 flux (added to one to display along with flux) for the
 fiducial parameters given at the end of the test_quad.jl
 routine.
+
+In some cases a faster, approximate formula may be used
+to a high degree of accuracy.  occultsmall.jl implements
+the 'small-planet approximation.'  It can be tested
+with julia> include("test_small.jl").
