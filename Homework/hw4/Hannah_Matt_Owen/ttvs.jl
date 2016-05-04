@@ -21,8 +21,8 @@ function ttvs(data)
 
     planets = []
 
-    for i=1:length(params)/5.0
-      planet = Planet_plane_hk(params[5*i-4],params[5*i-3],params[5*i-2],params[5*i-1],params[5*i])
+    for i=1:div(length(params),5)
+      planet = Planet_plane_hk(params[5i-4],params[5i-3],params[5i-2],params[5i-1],params[5i])
       push!(planets,planet)
     end
     ttv1 = zeros(length(data[1]))
@@ -32,8 +32,10 @@ function ttvs(data)
     return [ttv1;ttv2]
   end
 
+  # errors = ones(length(data)) * (30/(24*60*60)) # error of 30 sec
+  x = collect(1:1:length(data))
   p0 = [0.000003, 225, 8445, 0.0001, 0.0001, 0.000003, 365, 8461, 0.0001, 0.0001]
-  fit = curve_fit(model_func, [], data, p0)
+  fit = curve_fit(model_func, x, data, p0)
 
   return fit.param
 end
