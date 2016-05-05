@@ -21,7 +21,7 @@ function ttvs(data...)
     return
   end
 
-  combined_data = [] #combine all the data into one array, which we'll fit all at once
+  combined_data::Array{Float64} = [] #combine all the data into one array, which we'll fit all at once
   data_start_end = [] #store the start and end of each planet's data
   for pd in data
     combined_data = [combined_data;pd[:]]
@@ -66,16 +66,11 @@ function ttvs(data...)
       end
     end
 
-    println("------------------------")
-    println(results[data_start_end[1][1]:data_start_end[1][2]])
-    println(size(results))
-    println(typeof(results))
     return results
   end
 
   p0 = [0.000003, 225, 8445, 0.0001, 0.0001, 0.000003, 365, 8461, 0.0001, 0.0001]
   fit = curve_fit(model_func, [], combined_data, p0)
-
   return fit.param
 end
 
@@ -84,12 +79,9 @@ function test()
   p1 = readdlm("../ttv_planet1.txt")
   p2 = readdlm("../ttv_planet2.txt")
 
-  data = []
-  push!(data, p1[:,1])
-  push!(data, p2[:,1])
-
   result = ttvs(p1,p2)
-  return result
+  #println("m1=$(result[1]), period1=$(result[2]), m2=$(result[6]), p2=$(result[7])")
+  return "m1=$(result[1]), period1=$(result[2]), m2=$(result[6]), p2=$(result[7])"
 end
 
 println(test())
