@@ -73,11 +73,6 @@ function ttvs(data...)
   p0 = [0.000003, 225, 8445, 0.0001, 0.0001, 0.000003, 365, 8461, 0.0001, 0.0001]
 
   fit = curve_fit(model_func, [], combined_data, p0)
-<<<<<<< HEAD
-
-
-=======
->>>>>>> upstream/master
   return fit.param
 end
 
