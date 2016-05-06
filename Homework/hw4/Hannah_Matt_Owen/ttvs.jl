@@ -1,6 +1,7 @@
 using LsqFit
 include("../compute_ttv.jl")
 using TTVFaster
+include("MCJulia.jl")
 
 """
     ttvs(data)
@@ -46,11 +47,15 @@ function ttvs(data...)
 
     for i=1:num_planets-1
       ttv1 = zeros(data_start_end[i][2]-data_start_end[i][1] +1)
+      ttv_data_p1 = collect(1:1:length(ttv1))
+      ttv_data_p1 = ttv_data_p1 .* planets[i].period .+ planets[i].trans0
       for j=i+1:num_planets
         ttv2 = zeros(data_start_end[j][2]-data_start_end[j][1] +1)
+        ttv_data_p2 = collect(1:1:length(ttv2))
+        ttv_data_p2 = ttv_data_p2 .* planets[j].period .+ planets[j].trans0
         compute_ttv!(5,planets[i],planets[j],
-            combined_data[data_start_end[i][1]:data_start_end[i][2]],
-            combined_data[data_start_end[j][1]:data_start_end[j][2]],
+            ttv_data_p1,
+            ttv_data_p2,
             ttv1,ttv2);
         results[data_start_end[i][1]:data_start_end[i][2]] = results[data_start_end[i][1]:data_start_end[i][2]] + ttv1
         results[data_start_end[j][1]:data_start_end[j][2]] = results[data_start_end[j][1]:data_start_end[j][2]] + ttv2
@@ -69,17 +74,30 @@ function ttvs(data...)
     return results
   end
 
-  p0 = [0.000003, 225, 8445, 0.0001, 0.0001, 0.000003, 365, 8461, 0.0001, 0.0001]
+  p0 = [0.000003, 224, 8445, 0.0001, 0.0001, 0.000003, 365, 8461, 0.0001, 0.0001]
   fit = curve_fit(model_func, [], combined_data, p0)
-  return fit.param
+
+  #call the MC MC solver
+  pe = [0.000002, 4, 5, 0.00005, 0.00005, 0.000002, 5, 5, 0.00005, 0.00005]
+  ye = ones((1,length(combined_data)))*30/24/3600
+  mc_results = aimc(model_func, [], fit.param, pe, combined_data, ye)
+
+  return mc_results
 end
 
+function third_planet()
+  p1 = readdlm("../ttv_planet1.txt")
+  p2 = readdlm("../ttv_planet2.txt")
+
+
+end
 
 function test()
   p1 = readdlm("../ttv_planet1.txt")
   p2 = readdlm("../ttv_planet2.txt")
 
   result = ttvs(p1,p2)
+
   #println("m1=$(result[1]), period1=$(result[2]), m2=$(result[6]), p2=$(result[7])")
   return "m1=$(result[1]), period1=$(result[2]), m2=$(result[6]), p2=$(result[7])"
 end
