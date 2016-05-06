@@ -2,6 +2,8 @@ using LsqFit
 include("../compute_ttv.jl")
 using TTVFaster
 include("MCJulia.jl")
+Pkg.add("PyPlot")
+using PyPlot
 
 """
     ttvs(data)
@@ -14,7 +16,7 @@ Computer parameters for the planets passed in data.
 * `result`: an Nx5 array where each row contains [mass_ratio, period, trans0, ecosw, esinw]
             where N is the number of planets
 """
-function ttvs(data...)
+function ttvs(p0, data...)
   num_planets = length(data)
 
   if num_planets < 2
@@ -74,21 +76,39 @@ function ttvs(data...)
     return results
   end
 
-  p0 = [0.000003, 224, 8445, 0.0001, 0.0001, 0.000003, 365, 8461, 0.0001, 0.0001]
   fit = curve_fit(model_func, [], combined_data, p0)
 
-  #call the MC MC solver
-  pe = [0.000002, 4, 5, 0.00005, 0.00005, 0.000002, 5, 5, 0.00005, 0.00005]
-  ye = ones((1,length(combined_data)))*30/24/3600
-  mc_results = aimc(model_func, [], fit.param, pe, combined_data, ye)
-
-  return mc_results
+  return fit
 end
 
 function third_planet()
   p1 = readdlm("../ttv_planet1.txt")
   p2 = readdlm("../ttv_planet2.txt")
 
+  lh = []
+  periods = collect(500:1:1000)
+  for period in periods
+    for t0=1:10
+      t0_val = t0*period/10 + p1[1]
+      time = [t0_val, t0_val+period]
+
+      param0 = [0.000003, 224, 8445, 0.0001, 0.0001,
+                0.000003, 365, 8461, 0.0001, 0.0001,
+                0.0000015, period, val, 0.0001, 0.0001 ]
+      fit = ttvs(param0, p1,p2,time)
+
+      sigma = estimate_errors(fit, alpha=0.95)
+      errors = fit.resid
+      push!(lh, exp(-errors^2/(2sigma^2))/(2pi*sigma^2)^0.5)
+      end
+  end
+
+  plot(periods, lh)
+  show()
+  #call the MC MC solver
+  #perr = [0.000002, 4, 5, 0.00005, 0.00005, 0.000002, 5, 5, 0.00005, 0.00005]
+  #ye = ones((1,length(combined_data)))*30/24/3600
+  #mc_results = aimc(model_func, [], fit.param, perr, combined_data, ye)
 
 end
 
@@ -96,10 +116,14 @@ function test()
   p1 = readdlm("../ttv_planet1.txt")
   p2 = readdlm("../ttv_planet2.txt")
 
-  result = ttvs(p1,p2)
+  param0 = [0.000003, 224, 8445, 0.0001, 0.0001, 0.000003, 365, 8461, 0.0001, 0.0001]
+  fit = ttvs(param0, p1,p2)
+
+  result = fit.param
 
   #println("m1=$(result[1]), period1=$(result[2]), m2=$(result[6]), p2=$(result[7])")
-  return "m1=$(result[1]), period1=$(result[2]), m2=$(result[6]), p2=$(result[7])"
+  return "m1=$(result[1][1]), period1=$(result[2][1]), m2=$(result[6][1]), p2=$(result[7][1])"
 end
 
-println(test())
+#println(test())
+third_planet()

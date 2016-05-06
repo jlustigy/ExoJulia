@@ -95,6 +95,6 @@ function aimc(model, time, params, perrors, yvals, yerrs)
     psig = std(vec(par_mcmc[1:nwalkers,iburn:nsteps,i]));
     push!(results,(pavg,psig))
   end
-  println(results)
+  
   return results
 end
