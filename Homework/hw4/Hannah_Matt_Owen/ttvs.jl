@@ -101,7 +101,7 @@ function third_planet()
       end
   end
   # println(size(lh))
-  plot([x[1] for x in lh], [x[2] for x in lh])
+  scatter([x[1] for x in lh], [x[2] for x in lh])
   show()
   #call the MC MC solver
   #perr = [0.000002, 4, 5, 0.00005, 0.00005, 0.000002, 5, 5, 0.00005, 0.00005]
