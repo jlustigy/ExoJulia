@@ -35,19 +35,23 @@ end
 
 #Computes the transit depth as a function of time
 function transit(ts::Array{Float64},params::Array{Float64})
-    #params is [F_s,k,l,P,T,t_n,b]
-    taus = tau(ts,params[4],params[6])
-    rs = r(taus,params[7],params[2],params[3],params[5])
-    overlaps = overlap(rs,params[2],params[3])
-    return params[1]*(1.0.-overlaps./(pi*params[3]^2.0))
+    #params is [F_s,k,P,T,t_n,b]
+    taus = tau(ts,params[3],params[5])
+#    rs = r(taus,params[7],params[2],params[3],params[5])
+    rs = r(taus,params[6],params[2],1.0,params[4])
+#    overlaps = overlap(rs,params[2],params[3])
+    overlaps = overlap(rs,params[2],1.0)
+#    return params[1]*(1.0.-overlaps./(pi*params[3]^2.0))
+    return params[1]*(1.0.-overlaps/pi)
 end
 
 #Can be used for secondary occultation if desired (requires an extra parameter)
 function occultation(ts::Array{Float64},params::Array{Float64})
     #params is [F_p,k,l,P,T,t_n,b]
-    taus = tau(ts-(params[4]/2.0),params[4],params[6])
-    rs = r(taus,params[7],params[2],params[3],params[5])
-    overlaps = overlap(rs,params[2],params[3])
+    taus = tau(ts-(params[3]/2.0),params[3],params[5])
+#    rs = r(taus,params[7],params[2],params[3],params[5])
+    rs = r(taus,params[6],params[2],1.0,params[4])
+    overlaps = overlap(rs,params[2],1.0)
     return params[1]*(1.0.-overlaps./(pi*params[2]^2.0))
 end
 
@@ -86,10 +90,11 @@ end
 #determines a best guess for star flux
 transit_Fs_guess(y_data::Array{Float64}) = median(round(y_data))
 
-Assume l~R_sun. Calculate a rough transit depth, which gives ratio of radii squared.
+#Assume l~R_sun. Calculate a rough transit depth, which gives ratio of radii squared.
 #This will give an underestimate for when b>l-k (planet disk never fully overlaps the star)
 function transit_k_guess(y_data::Array{Float64},F_s::Float64)
-    l = 6.96e10
+#    l = 6.96e10
+    l = 1.0
     ysort = sort(y_data)
     depth_guess = 1.0 - median(ysort[1:100])/F_s
     return sqrt(depth_guess)*l
@@ -111,7 +116,8 @@ end
 #Fit function just wraps up all of the guesses and then fits, returns a fit object.
 #to get params, simply do result = fit_transit(x_data,y_data,y_err) then result.param
 function fit_transit(x_data::Array{Float64},y_data::Array{Float64},y_err::Array{Float64})
-    l_guess = 6.96e10
+#    l_guess = 6.96e10
+    l_guess = 1.0
     P_guess_init = transit_P_guess_init(x_data,y_data)
     tn_guess_init = transit_tn_guess_init(x_data,y_data)
     P_guess = transit_P_guess(x_data,y_data,P_guess_init,tn_guess_init)
@@ -120,7 +126,7 @@ function fit_transit(x_data::Array{Float64},y_data::Array{Float64},y_err::Array{
     k_guess = transit_k_guess(y_data,F_guess)
     T_guess = transit_T_guess(x_data,y_data,tn_guess_init,F_guess)
     offset = (tn_guess-tn_guess_init)/tn_guess
-    p0 = [F_guess,k_guess,l_guess,P_guess,T_guess,tn_guess_init+abs(offset),0.0]
+    p0 = [F_guess,k_guess,P_guess,T_guess,tn_guess_init+abs(offset),0.0]
     fit = curve_fit(transit,x_data,y_data,(1.0./y_err).^2.0,p0)
     return fit
 end
@@ -138,9 +144,9 @@ result = fit_transit(times,flux0,flux_err) ;
 function plot_transit(x_data::Array{Float64},y_data::Array{Float64},fit::LsqFit.LsqFitResult{Float64})
     #Outputs a phase folded normalized plot of light curve (points) with best fit (line)
     params = fit.param
-    P = params[4]
-    t_n = params[6]
-    T = params[5]
+    P = params[3]
+    t_n = params[5]
+    T = params[4]
     F0 = params[1]
     norm_flux = y_data/F0
     y_fit = transit(x_data,params)/F0
@@ -156,11 +162,11 @@ function density(x_data::Array{Float64},fit::LsqFit.LsqFitResult{Float64})
     Msun = 1.9891e33  # g
     Rsun = 6.955e10   # cm
     
-    P = fit.param[4]+0.19
-    T = fit.param[5]
+    P = fit.param[3]+0.19
+    T = fit.param[4]
     F0 = fit.param[1]
     y_fit = transit(x_data,fit.param)/F0
-    b = fit.param[7]*Rsun
+    b = fit.param[6]*Rsun
     dflux = maximum(1.0-y_fit)
     
     # factor to put it in units of sun
@@ -169,3 +175,6 @@ function density(x_data::Array{Float64},fit::LsqFit.LsqFitResult{Float64})
     return rho
 end
 
+println("Stellar density: ",density(times,result))
+
+plot_transit(times,flux0,result)
