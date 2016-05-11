@@ -3,8 +3,6 @@ include("../compute_ttv.jl")
 using TTVFaster
 include("MCJulia.jl")
 using PyPlot
-<<<<<<< HEAD
-=======
 
 
 function model_func(data_start_end, params)
@@ -63,7 +61,6 @@ function data_start_end_array(data...)
   end
   return data_start_end
 end
->>>>>>> f04257cf17447b28b72d67ef2bd8cf9a1a18971d
 
 """
     ttvs(data)
@@ -124,7 +121,6 @@ function third_planet()
       end
   end
 
-<<<<<<< HEAD
   fit = curve_fit(model_func, [], combined_data, p0)
 
   return fit
@@ -185,7 +181,6 @@ function third_planet()
 
   @printf("mass of p1=%0.3e +/- %0.2e, period of p1=%4.2f +/- %0.2e\nmass of p2=%0.3e +/- %0.2e, period of p2=%4.2f +/- %0.2e\nmass of p3=%0.3e +/- %0.2e, period of p3=%4.2f +/- %0.2e\n",
           mc_results[1][1],mc_results[1][2],mc_results[2][1],mc_results[2][2],mc_results[6][1],mc_results[6][2],mc_results[7][1],mc_results[7][2],mc_results[11][1],mc_results[11][2],mc_results[12][1],mc_results[12][2])
->>>>>>> f04257cf17447b28b72d67ef2bd8cf9a1a18971d
 
 end
 
@@ -198,10 +193,6 @@ function test()
 
   result = fit.param
 
-<<<<<<< HEAD
-  #println("m1=$(result[1]), period1=$(result[2]), m2=$(result[6]), p2=$(result[7])")
-=======
->>>>>>> f04257cf17447b28b72d67ef2bd8cf9a1a18971d
   return "m1=$(result[1][1]), period1=$(result[2][1]), m2=$(result[6][1]), p2=$(result[7][1])"
 end
 
