@@ -4,7 +4,7 @@
 # PI: Eric Agol
 # Written by: Andrew Lincowski & Spencer Wallace
 # University of Washington
-# Time-stamp: <transits_time.jl on Saturday, 23 April, 2016 at 12:49:43 PDT (linc)>
+# Time-stamp: <transits_time.jl on Thursday, 28 April, 2016 at 16:18:50 PDT (linc)>
 
 # Need to change velocity of planet to duration of transit
 # Need to allow for impact parameter outside of star (still partial transit)
@@ -107,10 +107,13 @@ function transit(delta,b,t,t0,dur,period,base_flux)
         #println("bad b")
         return typemax(Float64)
     end
-    
-    v = 2*(sqrt(delta) + 1)*sqrt(1 - b*b)/dur
+
+    sdelt = sqrt(delta)
+    sb2 = sqrt(1 - b*b)
+     
+    v = 2*(sdelt + 1)*sb2/dur
     t = mod(t,period)
-    a = v*(t-t0)-sqrt(1-b^2)-sqrt(delta)
+    a = v*(t-t0)-sqrt(1 + delta + 2*sdelt  - b*b)
     r = sqrt(a*a+b*b)
 
     return base_flux*(1 - pi_crust(delta,r)*delta)

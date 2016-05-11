@@ -1,6 +1,9 @@
 using LsqFit
 using PyPlot
 
+push!(LOAD_PATH,"../../../ExoJulia")
+using ExoJulia
+
 """
     circle_overlap(d, r_s, r_p)
 Computer the area of overlap of two circles as a function of the distance
@@ -30,7 +33,7 @@ end
 
 """
     get_transit_parameters(time, flux, err)
-Compute the time of first transit (t0), period (p), sky velocity (v) in units of
+Compute the time of first transit (t0)=start of first ingress, period (p), sky velocity (v) in units of
 stellar radius/day, radius ratio (k), impact parameter (b), and unocculted flux
 level (f0) that best match the provided data values.
 
@@ -53,13 +56,15 @@ function get_transit_parameters(time, flux, err; trasnitTimeLimit=1.0)
   p, t0, f0, k, b, v = initial_values(time, flux, trasnitTimeLimit)
 
   #params format: [p, t0, f0, k, b, v]
-  params = [p, t0, f0, k, b, v] #initial guesses
+  u1 = 0.5
+  u2 = 0.5
+  params = [p, t0, f0, k, b, v, u1, u2] #initial guesses
 
   #println("initial estimate: p=$(p), t0=$(t0), f0=$(f0), k=$(k), b=$(b), v=$(v)")
 
   #closure function called by curve_fit
   function model_transit(time, params)
-    p, t0, f0, k, b, v = params
+    p, t0, f0, k, b, v, u1, u2 = params
 
     #Curve fit isn't that great and sometimes tries negative values for b...
     if b < 0.0
@@ -80,16 +85,20 @@ function get_transit_parameters(time, flux, err; trasnitTimeLimit=1.0)
       dist = ( b^2 + ( (1 - b^2)^0.5 - ( (t%p) - t0 )*v )^2 )^0.5 #the distance between the planet and star centers
       r_p = k #radius of planet in terms of stellar radii, k=r_p/r_s
       r_s = 1.0 #radius of star in units of stellar radii
-      overlap = circle_overlap(dist, r_s, r_p) #percent of star covered
 
+      model_flux[i] = f0*ExoJulia.Transit.occultquad(dist,u1,u2,k)
 
-      model_flux[i] = f0*(1-overlap) #calculate the total flux
+      # overlap = circle_overlap(dist, r_s, r_p) #percent of star covered
+      # model_flux[i] = f0*(1-overlap) #calculate the total flux
     end
     return model_flux
   end
 
+  T = 2*(1-b^2)^0.5/v
+
   fit = curve_fit(model_transit, time, flux, 1./err.^2, params)
-  p, t0, f0, k, b, v = fit.param
+  p, t0, f0, k, b, T, u1, u2 = fit.param
+  # println("u1 = $(u1), u2 = $(u2)")
 
   #plot(time,flux, color="blue")
   #plot(time, model_transit(time,fit.param), color="red")
@@ -159,7 +168,9 @@ function initial_values(time, flux, trasnitTimeLimit)
 
   #get the average transit time
   T = mean(transit_lengths)
+  println(T)
   v = 2*(1-b^2)^0.5/T
+
 
   #loop over the p vals to find the average p
   p_sum = 0.0
@@ -184,12 +195,17 @@ function read_data_file(filepath)
   return (time, flux, err)
 end
 
+function get_density(b, p, T)
+  return 3*(1-b^2)^(3/2) * (p*24*3600/2pi) / 6.67e-8 / (T*24*3600)^3 / pi^2
+end
 
 
 function test()
   time, flux, err = read_data_file("mystery_planet2.txt")
-  p, t0, f0, k, b, v =  get_transit_parameters(time, flux, err)
-  println("Got t0=$(t0), p=$(p), v=$(v), k=$(k), b=$(b), f0=$(f0)")
+  p, t0, f0, k, b, T =  get_transit_parameters(time, flux, err)
+  rho = get_density(b, p, T)
+
+  println("Got density=$(rho), p=$(p), T=$(T), depth=$(k^2), b=$(b)")
 end
 
 
