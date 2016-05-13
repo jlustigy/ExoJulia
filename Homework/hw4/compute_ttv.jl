@@ -60,6 +60,7 @@ function compute_ttv!(jmax::Integer,p1::Planet_plane_hk,p2::Planet_plane_hk,time
 # Compute the semi-major axis ratio of the planets:
 # println(p1.period,p2.period)
 const alpha = (p1.period/p2.period)^(2//3)  # Julia supports rational numbers!
+println(alpha, p1.period, p2.period)
 @assert(alpha < 1)
 @assert(alpha > 0)
 # Number of times:
