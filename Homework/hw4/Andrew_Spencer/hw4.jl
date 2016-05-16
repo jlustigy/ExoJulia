@@ -109,6 +109,7 @@ function timing_model_2p(x, p)
     return retarr
 end
 
+#=
 # 2 planet lsq fit
 p = [1e-3, Per1, transit_time1[1], 0.05, 0.05,
      1e-3, Per2, transit_time2[1], 0.05, 0.05]
@@ -121,6 +122,7 @@ weight[:] = (30.0/86400.0)^-2.
 errorbars[:] = 30.0/86400.0
 fit = curve_fit(timing_model_2p, x, y , errorbars, p)
 print(fit.param)
+=#
 
 global Period3 = 4329.0
 function timing_model_3p_fixed_p3(x, p)
@@ -141,17 +143,18 @@ function timing_model_3p_fixed_p3(x, p)
     ecosw3 = p[13]
     esinw3 = p[14]
 
-    t1 = collect(linspace(t01, t01 + period1*length(transit_time1), length(transit_time1)))
-    t2 = collect(linspace(t02, t02 + period2*length(transit_time2), length(transit_time2)))
+    t1 = collect(linspace(t01, t01 + period1*(length(transit_time1)-1), length(transit_time1)))
+    t2 = collect(linspace(t02, t02 + period2*(length(transit_time2)-1), length(transit_time2)))
 
       # Inner planets must have smaller periods
-      if ((period1 > 0.) && (period1 < period2) && (period2 < Period3))# &&
+      if ((period1 > 0.) && (period1 < period2) && (period2 < Period3) &&
         # Restrict ecc vector to be between -1 and 1 (and not 0)
-        #(ecosw1 != 0.) && (esinw1 != 0.) && (ecosw2 != 0.) && (esinw2 != 0.) && (ecosw3 != 0. && esinw3 != 0.) &&
-        #(ecosw1 > -1.) && (esinw1 > -1.) && (ecosw2 > -1.) && (esinw2 > -1.) && (ecosw3 > -1. && esinw3 > -1.) &&
-        #(ecosw1 < 1.) && (esinw1 < 1.) && (ecosw2 < 1.) && (esinw2 < 1.) && (ecosw3 < 1. && esinw3 < 1.))
-
-        t3 = collect(linspace(0., Period3*10., 10))
+        (ecosw1 != 0.) && (esinw1 != 0.) && (ecosw2 != 0.) && (esinw2 != 0.) && (ecosw3 != 0.) && (esinw3 != 0.) &&
+        (ecosw1 > -1.) && (esinw1 > -1.) && (ecosw2 > -1.) && (esinw2 > -1.) && (ecosw3 > -1.) && (esinw3 > -1.) &&
+        (ecosw1 < 1.) && (esinw1 < 1.) && (ecosw2 < 1.) && (esinw2 < 1.) && (ecosw3 < 1.) && (esinw3 < 1.) &&
+        (m_rat1 > 0.) && (m_rat2 > 0.) && (m_rat3 > 0.))
+        println("Good parameter!")
+        t3 = collect(linspace(0., Period3*9., 10))
         
         pl = Array(TTVFaster.Planet_plane_hk{Float64}, 3)
         pl[1] = TTVFaster.Planet_plane_hk{Float64}(m_rat1, period1, t01, ecosw1, esinw1)
@@ -167,13 +170,14 @@ function timing_model_3p_fixed_p3(x, p)
         return retarr
     end
 
-    retarr = zeros(length(transit_time1)+length(transit_time2))
-    retarr[:] = typemax(Float64)
-    return retarr
+    #retarr = zeros(length(transit_time1)+length(transit_time2))
+    return collect([t1,t2])
+    #retarr[:] = typemax(Float64)
+    #return retarr
 end
 
 # 3 planet lsq fit
-"""
+
 p = [1e-6, Per1, transit_time1[1], 0.05, 0.05,
     1e-6, Per2, transit_time2[2], 0.05, 0.05,
     1e-2,      transit_time1[1], 0.05, 0.05]
@@ -186,7 +190,7 @@ weight[:] = (30.0/86400.0)^(-2.)
 errorbars[:] = 30.0/86400.0
 fit = curve_fit(timing_model_3p_fixed_p3, x, y, errorbars, p)
 print(fit.param)
-"""
+
 
 function mcmc_fit!(model, x::Vector, y::Vector, y_error::Vector, lsq_fit_params::Vector, 
                    param_errors::Vector, chi_best::Float64, param_mean::Vector, param_std::Vector, )  
@@ -319,34 +323,37 @@ function timing_model_3p(x, p)
     return retarr
 end
 
-"""
-p = [1e-6, Per1, transit_time1[1], 0.05, 0.05,
-    1e-6, Per2, transit_time2[2], 0.05, 0.05,
-    1e-2, Period3, transit_time1[1], 0.05, 0.05]
+#=
+#p = [1e-6, Per1, transit_time1[1], 0.05, 0.05,
+#    1e-6, Per2, transit_time2[2], 0.05, 0.05,
+#    1e-2, Period3, transit_time1[1], 0.05, 0.05]#
 
 #                m   per  t0   ecosw esinw
-param_errors = [0.001, 0.1, Per1, 0.05, 0.05, 
-                0.001, 0.1, Per2, 0.05, 0.05, 
-                0.01, 1.0, 4329.0, 1.0, 1.0]
-chi_best = 1e20
+#param_errors = [0.001, 0.1, Per1, 0.05, 0.05, 
+#                0.001, 0.1, Per2, 0.05, 0.05, 
+#                0.01, 1.0, 4329.0, 1.0, 1.0]
+#chi_best = 1e20##
+#
+#param_mean = zeros(15)
+#param_std = zeros(15)
 
-param_mean = zeros(15)
-param_std = zeros(15)
+#y = collect([transit_time1, transit_time2])
+#x = collect(linspace(1, length(y), length(y)))
 
-y = collect([transit_time1, transit_time2])
-x = collect(linspace(1, length(y), length(y)))
+##y_error = Array(Float64,length(y))
+#y_error[:] = 30.0/86400.0
 
-y_error = Array(Float64,length(y))
-y_error[:] = 30.0/86400.0
+#mcmc1 = mcmc_fit!(timing_model_3p, x, y, y_error, p, param_errors, chi_best, param_mean, param_std)
 
-mcmc1 = mcmc_fit!(timing_model_3p, x, y, y_error, p, param_errors, chi_best, param_mean, param_std)
-"""
 
 # julia throws an error if I dont place some code between comment blocks
-a = 4
+#a = 4
 
 # output histogrammed mcmc results to a text file for later use
-"""
+
+=#
+
+#=
 using PyCall
 @pyimport numpy
 
@@ -362,4 +369,4 @@ for j=1:15
   end
   close(outfile)
 end
-"""
+=#
