@@ -153,7 +153,7 @@ function timing_model_3p_fixed_p3(x, p)
         (ecosw1 > -1.) && (esinw1 > -1.) && (ecosw2 > -1.) && (esinw2 > -1.) && (ecosw3 > -1.) && (esinw3 > -1.) &&
         (ecosw1 < 1.) && (esinw1 < 1.) && (ecosw2 < 1.) && (esinw2 < 1.) && (ecosw3 < 1.) && (esinw3 < 1.) &&
         (m_rat1 > 0.) && (m_rat2 > 0.) && (m_rat3 > 0.))
-        println("Good parameter!")
+        #println("Good parameter!")
         t3 = collect(linspace(0., Period3*9., 10))
         
         pl = Array(TTVFaster.Planet_plane_hk{Float64}, 3)
@@ -323,27 +323,27 @@ function timing_model_3p(x, p)
     return retarr
 end
 
-#=
-#p = [1e-6, Per1, transit_time1[1], 0.05, 0.05,
-#    1e-6, Per2, transit_time2[2], 0.05, 0.05,
-#    1e-2, Period3, transit_time1[1], 0.05, 0.05]#
+
+p = [1e-6, Per1, transit_time1[1], 0.05, 0.05,
+    1e-6, Per2, transit_time2[2], 0.05, 0.05,
+    1e-2, Period3, transit_time1[1], 0.05, 0.05]#
 
 #                m   per  t0   ecosw esinw
-#param_errors = [0.001, 0.1, Per1, 0.05, 0.05, 
-#                0.001, 0.1, Per2, 0.05, 0.05, 
-#                0.01, 1.0, 4329.0, 1.0, 1.0]
-#chi_best = 1e20##
-#
-#param_mean = zeros(15)
-#param_std = zeros(15)
+param_errors = [0.001, 0.1, Per1, 0.05, 0.05, 
+                0.001, 0.1, Per2, 0.05, 0.05, 
+                0.01, 1.0, 4329.0, 1.0, 1.0]
+chi_best = 1e20##
 
-#y = collect([transit_time1, transit_time2])
-#x = collect(linspace(1, length(y), length(y)))
+param_mean = zeros(15)
+param_std = zeros(15)
 
-##y_error = Array(Float64,length(y))
-#y_error[:] = 30.0/86400.0
+y = collect([transit_time1, transit_time2])
+x = collect(linspace(1, length(y), length(y)))
 
-#mcmc1 = mcmc_fit!(timing_model_3p, x, y, y_error, p, param_errors, chi_best, param_mean, param_std)
+y_error = Array(Float64,length(y))
+y_error[:] = 30.0/86400.0
+
+mcmc1 = mcmc_fit!(timing_model_3p, x, y, y_error, p, param_errors, chi_best, param_mean, param_std)
 
 
 # julia throws an error if I dont place some code between comment blocks
@@ -351,9 +351,9 @@ end
 
 # output histogrammed mcmc results to a text file for later use
 
-=#
 
-#=
+
+
 using PyCall
 @pyimport numpy
 
@@ -369,4 +369,3 @@ for j=1:15
   end
   close(outfile)
 end
-=#
