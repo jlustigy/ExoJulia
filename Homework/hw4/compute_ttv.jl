@@ -37,7 +37,7 @@ end
 """
 # Error message to explain to anyone who tries to use the old version
 """
-function compute_ttv!(jmax::Integer,p1::Planet_plane,p2::Planet_plane,time1::Vector,time2::Vector,ttv1::Vector,ttv2::Vector) 
+function compute_ttv!(jmax::Integer,p1::Planet_plane,p2::Planet_plane,time1::Vector,time2::Vector,ttv1::Vector,ttv2::Vector)
   error("The Planet_plane data structure has been deprecated in favor of Planet_plane_hk")
 end
 
@@ -60,6 +60,7 @@ function compute_ttv!(jmax::Integer,p1::Planet_plane_hk,p2::Planet_plane_hk,time
 # Compute the semi-major axis ratio of the planets:
 # println(p1.period,p2.period)
 const alpha = (p1.period/p2.period)^(2//3)  # Julia supports rational numbers!
+#println(alpha, p1.period, p2.period)
 @assert(alpha < 1)
 @assert(alpha > 0)
 # Number of times:
@@ -73,9 +74,9 @@ ttv_succinct!(jmax+1,alpha,f1,f2)  # I need to compute coefficients one higher t
 # Compute since of \pomegas:
 e1 = sqrt(p1.esinw*p1.esinw+p1.ecosw*p1.ecosw)
 e2 = sqrt(p2.esinw*p2.esinw+p2.ecosw*p2.ecosw)
-sin1om=p1.esinw/e1 
+sin1om=p1.esinw/e1
 sin2om=p2.esinw/e2
-cos1om=p1.ecosw/e1 
+cos1om=p1.ecosw/e1
 cos2om=p2.ecosw/e2
 # Compute mean motions:
 n1=2pi/p1.period
@@ -91,7 +92,7 @@ lam20=-n2*p2.trans0 + 2*p2.esinw # 2*p2.eccen*sin2om
   sinpsi1=sin(psi1)
   cospsi1=cos(psi1)
   sinlam11 = sin(lam11)
-  coslam11 = cos(lam11) 
+  coslam11 = cos(lam11)
   sinlam1om1=sinlam11*cos1om-coslam11*sin1om
   coslam1om1=coslam11*cos1om+sinlam11*sin1om
   sinlam1om2=sinlam11*cos2om-coslam11*sin2om
@@ -120,7 +121,7 @@ end
   lam12 = n1*time2[i]+lam10
   lam22 = n2*time2[i]+lam20
   sinlam22 = sin(lam22)
-  coslam22 = cos(lam22) 
+  coslam22 = cos(lam22)
   psi2  = lam12-lam22 # Compute difference in longitudes at times of transit of planet 2
   sinpsi2=sin(psi2)
   cospsi2=cos(psi2)
