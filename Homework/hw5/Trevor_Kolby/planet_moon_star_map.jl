@@ -120,5 +120,6 @@ println("Range of grid, y1: ",y1min,' ',y1range1,' ',y1max,' ',y1range2)
 println("Range of grid, y2: ",y2min,' ',y2range1,' ',y2max,' ',y2range2)
 # Take the ratio of the microlensing maps with & without the planet+star:
 map = transpose(map1./map2)
+println("u1",u1min_norm,u1max_norm,"u2",u2min_norm,u2max_norm)
 return map
 end
