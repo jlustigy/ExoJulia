@@ -2,6 +2,7 @@
 # Positions of bodies (in units of Einstein radius of star):
 
 import PyPlot
+include("../cgs.jl")
 using CGS
 
 function planet_moon_star(yplanet,y1moon,y2moon,eps1,eps2)
@@ -119,9 +120,5 @@ println("Range of grid, y1: ",y1min,' ',y1range1,' ',y1max,' ',y1range2)
 println("Range of grid, y2: ",y2min,' ',y2range1,' ',y2max,' ',y2range2)
 # Take the ratio of the microlensing maps with & without the planet+star:
 map = transpose(map1./map2)
-# Now make a plot:
-PyPlot.imshow(map, interpolation = "nearest", extent =[u1min_norm,u1max_norm,u2min_norm,u2max_norm])
-# Create a pdf file of the map:
-PyPlot.savefig("map.pdf", bbox_inches="tight")
-return 
+return map,(u1min_norm,u1max_norm,u2min_norm,u2max_norm)
 end
