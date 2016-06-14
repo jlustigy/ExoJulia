@@ -111,7 +111,7 @@ function third_planet()
       #the initial guess parameter
       param0 = [0.000003, 224, 8445, 0.0001, 0.0001,
                 0.000003, 365, 8461, 0.0001, 0.0001,
-                0.0000015, period, t0_val, 0.0001, 0.0001 ]
+                0.001, period, t0_val, 0.0001, 0.0001 ]
       fit = ttvs(param0, p1,p2,time)
 
       sigma = estimate_errors(fit, 0.95)[12]
@@ -131,8 +131,16 @@ function third_planet()
   p2 = readdlm("../ttv_planet2.txt")
 
   lh = []
-  periods = collect(600:20:800)
+  param3_best = zeros(12)
+  lh_best = 0.0
+#  periods = collect(600:20:800)
+  periods = collect(4000:50:4600)
+  lh_period = zeros(length(periods))
+  count = 0
+  sig_time = 30/24/3600
   for period in periods
+    lhp_best = 0.0
+    count +=1
     for t0=1:10
       t0_val = t0*period/10 + p1[1]
       time = [t0_val, t0_val+period]
@@ -142,37 +150,46 @@ function third_planet()
                 0.0000015, period, t0_val, 0.0001, 0.0001 ]
       fit = ttvs(param0, p1,p2,time)
 
-      sigma = estimate_errors(fit, 0.95)[12]
-      errors = fit.resid[12]
-      lh_val = exp(-errors^2/(2*sigma^2))/(2*pi*sigma^2)^0.5
+#      sigma = estimate_errors(fit, 0.95)[12]
+#      errors = fit.resid[12]
+#      lh_val = exp(-errors^2/(2*sigma^2))/(2*pi*sigma^2)^0.5
+      lh_val = exp(-0.5*sum((fit.resid/sig_time).^2))
+      if lh_val > lh_best
+        param3_best = fit.param
+      end
+      if lh_val > lhp_best
+        lh_period[count] = lh_val
+      end
       push!(lh, (period, lh_val))
       end
   end
   # println(size(lh))
-  scatter([x[1] for x in lh], [x[2] for x in lh])
+#  scatter([x[1] for x in lh], [x[2] for x in lh])
+  plot(periods,lh_period)
+  println("Best parameters: ",param3_best)
   show()
   #call the MC MC solver
   #perr = [0.000002, 4, 5, 0.00005, 0.00005, 0.000002, 5, 5, 0.00005, 0.00005]
   #ye = ones((1,length(combined_data)))*30/24/3600
   #mc_results = aimc(model_func, [], fit.param, perr, combined_data, ye)
-=======
   #uncomment to plot the curve fit results
   #scatter([x[1] for x in lh], [x[2] for x in lh])
   #show()
 
   #call the MC MC solver
-  perr = [0.000002, 4, 5, 0.00005, 0.00005, #assume same error for each planet
-          0.000002, 5, 5, 0.00005, 0.00005,
-          0.000002, 5, 5, 0.00005, 0.00005]
-  planet_3 = lh[1][3] #data for all three planets
-  best = 0.0
-  for item in lh
-    cur = item[2] #fit value
-    if cur > best
-      best = cur
-      planet_3 = item[3]
-    end
-  end
+  perr = [0.0000002, 0.1, 0.1, 0.005, 0.005, #assume same error for each planet
+          0.0000002, 0.1, 0.1, 0.005, 0.005,
+          0.0002, 5, 5, 0.005, 0.005]
+#  planet_3 = lh[1][3] #data for all three planets
+#  best = 0.0
+#  for item in lh
+#    cur = item[2] #fit value
+#    if cur > best
+#      best = cur
+#      planet_3 = item[3]
+#    end
+#  end
+  planet_3 = param3_best
   p3 = [planet_3[13], planet_3[13]+planet_3[12]] #[t0, to+period] of planet 3
   combined_data = [p1;p2;p3]
   data_start_end = data_start_end_array(p1,p2,p3)
