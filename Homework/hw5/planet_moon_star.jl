@@ -123,5 +123,5 @@ map = transpose(map1./map2)
 PyPlot.imshow(map, interpolation = "nearest", extent =[u1min_norm,u1max_norm,u2min_norm,u2max_norm])
 # Create a pdf file of the map:
 PyPlot.savefig("map.pdf", bbox_inches="tight")
-return
+return 
 end
