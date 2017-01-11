@@ -1,6 +1,6 @@
 # ExoJulia <img src="https://github.com/jlustigy/ExoJulia/blob/master/Resources/proto1.png" width="13%" height="13%" align="left" />
 
-**Julia packages for fast exoplanet modeling**
+**A Julia package for fast exoplanet modeling**
 
 This code is being developed by Astronomy graduate students at the University of Washington for the course *ASTR 598A: Exoplanets*. The course and this project are led by [Professor Eric Agol](http://faculty.washington.edu/agol/index.html).  
 
