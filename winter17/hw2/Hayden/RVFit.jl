@@ -25,10 +25,12 @@ function RVFit(FileName, InitialGuess, NumOfIterations)
   PeriodRange = linspace((1-0.9/j)*InitialGuess[3],(1+0.5/j)*
     InitialGuess[3],NumOfIterations);
   for i=1:NumOfIterations #Sample the given period space
-    t = DATA[:,1] - minimum(DATA[:,1]); #Reset t with the first data point being zero
-    while maximum(t)>PeriodRange[i] #Fold time based on the guessed period
-      t[t.>PeriodRange[i]]-=PeriodRange[i]
-    end
+    # t = DATA[:,1] - minimum(DATA[:,1]); #Reset t with the first data point being zero
+    # while maximum(t)>PeriodRange[i] #Fold time based on the guessed period
+    #   t[t.>PeriodRange[i]]-=PeriodRange[i]
+    # end
+    t = DATA[:,1];
+    t = (t-minimum(t))%PeriodRange[i];
     Order = sortperm(t);
     Error = sum((RV[Order[2:end]]-RV[Order[1:end-1]]).^2);
     if Error < BestError
