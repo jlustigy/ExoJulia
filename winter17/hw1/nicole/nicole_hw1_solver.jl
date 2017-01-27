@@ -26,6 +26,7 @@ function solver_loop(M,ecc)
         i += 1
     end
     E_final = E_next
+    return E_final
 
 end
     
