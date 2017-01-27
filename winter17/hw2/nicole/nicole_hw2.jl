@@ -43,11 +43,8 @@ function get_f(ecc,E)
 function get_vrad(time,init_param)
     vrad = zeros(length(time))
     ecc = init_param[2]
-#    if (ecc < 1)
-#        if (ecc > 0)
     if (ecc >= 1) || (ecc < 0)
-       vrad = 0
-       return vrad
+    vrad = 0
     end
     for k in range(1,length(time)-1)
         #println(k)
@@ -60,6 +57,7 @@ function get_vrad(time,init_param)
     return vrad
 end
 
+# Read in our data table
 planet_data = readtable("mystery_planet.txt", separator =' ')
 
 N = length(planet_data[1])
@@ -67,11 +65,10 @@ time   = convert(Array,planet_data[1])
 RV     = convert(Array,planet_data[2]) # m/s
 RV_err = convert(Array,planet_data[3]) # m/s
 
-tfold_best = get_period(time,RV)
-
 plot(time,RV,marker="o",linestyle="None",color="Salmon")
 show()
 
+# Determine a best folding time (period) 
 tfold_best = get_period(time,RV)
 #println(tfold_best)
 time_new    = rem(time,tfold_best)
@@ -89,10 +86,10 @@ c_0    = h_0
 v_0    = 1.0
 p_0 = [per_0,ecc_0,t_per0,h_0,c_0,v_0]
 err = 1.0./(RV_err.^2)
-println(' ')
 
-fit      = curve_fit(get_vrad, time, RV, p_0)
-rv_model = get_vrad(time,p_0)
+# Find fit model
+fit      = curve_fit(get_vrad, time, RV, err, p_0)
+rv_model = get_vrad(time,fit.param)
 
 per_fit = fit.param[1]
 ecc_fit = fit.param[2]
