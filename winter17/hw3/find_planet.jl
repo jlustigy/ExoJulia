@@ -11,7 +11,7 @@ include("bls.jl")
 #     qmi  = minimum fractional transit length to be tested
 #     qma  = maximum fractional transit length to be tested
 
-data =readdlm("mysteryplanet3.txt")
+data =readdlm("mysteryplanet2.txt")
 t = vec(data[:,1])
 # sampling time:
 dt =  t[2]-t[1]
@@ -50,7 +50,6 @@ for i=1:np
  end
 end
 # Make the Farey sequence:
-
 plo = 1./(f0+df/2.)
 phi = 1./(f0-df/2.)
 phi_best = phi[imax]
@@ -66,11 +65,11 @@ for i=1:np
     x1=plo[i]
     x2=phi[i]
   else
-    x1=1./phi[i] 
+    x1=1./phi[i]
     x2=1./plo[i]
   end
   xint = floor(x1)
-  x1=x1-xint 
+  x1=x1-xint
   x2=x2-xint
 # Set up the initial Farey sequence left & right
 # bounds for numerator & denominator:
@@ -79,7 +78,7 @@ for i=1:np
   r0n=1
   r0d=1
 # Perform the first Farey addition a/b+c/d = (a+c)/(b+d):
-  mn=l0n+r0n 
+  mn=l0n+r0n
   md=l0d+r0d
   m=float(mn)/float(md)
 # Now, keep doing Farey addition until a rational

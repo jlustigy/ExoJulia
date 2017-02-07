@@ -35,12 +35,16 @@ function CircleOverlap(K::Float64,r)
 
   #Make sure A is between 0 and 1
     if A[i]<0
-      A[i] = 0
-      println("WARNING: Manually increased area values to fit within bounds 0<A<1")
+      A[i] = 0;
+      println("WARNING: Manually increased area values from $(A[i]) to fit within bounds 0<A<1")
     elseif A[i]>1
-      println("WARNING: Manually reduced area values to fit within bounds 0<A<1")
-      A[i] = 1
+      println("WARNING: Manually reduced area values from $(A[i]) to fit within bounds 0<A<1")
+      A[i] = 1;
     end
   end #End For
+
+  if maximum(size(A)) == 1
+    A=A[1];
+  end
   return A
 end
