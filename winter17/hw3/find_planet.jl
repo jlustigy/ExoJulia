@@ -11,7 +11,7 @@ include("bls.jl")
 #     qmi  = minimum fractional transit length to be tested
 #     qma  = maximum fractional transit length to be tested
 
-data =readdlm("mysteryplanet2.txt")
+data =readdlm("mysteryplanet3.txt")
 t = vec(data[:,1])
 # sampling time:
 dt =  t[2]-t[1]
@@ -50,6 +50,7 @@ for i=1:np
  end
 end
 # Make the Farey sequence:
+
 plo = 1./(f0+df/2.)
 phi = 1./(f0-df/2.)
 phi_best = phi[imax]
