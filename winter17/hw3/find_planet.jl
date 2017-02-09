@@ -66,11 +66,11 @@ for i=1:np
     x1=plo[i]
     x2=phi[i]
   else
-    x1=1./phi[i] 
+    x1=1./phi[i]
     x2=1./plo[i]
   end
   xint = floor(x1)
-  x1=x1-xint 
+  x1=x1-xint
   x2=x2-xint
 # Set up the initial Farey sequence left & right
 # bounds for numerator & denominator:
@@ -79,7 +79,7 @@ for i=1:np
   r0n=1
   r0d=1
 # Perform the first Farey addition a/b+c/d = (a+c)/(b+d):
-  mn=l0n+r0n 
+  mn=l0n+r0n
   md=l0d+r0d
   m=float(mn)/float(md)
 # Now, keep doing Farey addition until a rational
