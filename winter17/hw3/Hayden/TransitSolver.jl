@@ -9,13 +9,18 @@ OUTPUS: Flux as a fraction of stellar flux (NetFlux)
 
 include("CircleOverlap.jl")
 
-function TransitSolver(t, Params)
+function TransitSolver(t, Params; Fit2ndEclipse = false)
   Period       = Params[1];
   TransTime    = Params[2];
   T0           = Params[3];
   b            = Params[4];
   PlanetRadius = Params[5];
-  PlanetFlux   = Params[6];
+
+  if Fit2ndEclipse == true
+    PlanetFlux   = Params[6];
+  else
+    PlanetFlux = 0;
+  end
 
   t = t-minimum(t); #Normalize t to zero
   t -= T0; #Offset t by T0

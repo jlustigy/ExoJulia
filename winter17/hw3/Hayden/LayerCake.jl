@@ -32,13 +32,18 @@ function LayerCake(t, Params, LimbDark)
       #end
     end
   end
-  LayerRadii = LayerRadii[LayerRadii.!=0];
+  #LayerRadii = LayerRadii[LayerRadii.!=0];
+  NewRp = Rp./LayerRadii;
+  Newb = b./LayerRadii;
   NetFlux = zeros(size(t));
   for i=1:maximum(size(LayerRadii))
-    NewTransit = Transit*sqrt(((LayerRadii[i]+Rp)^2-b^2)/((1-Rp)^2-b^2))
-    NewT0 = T0+(Transit-NewTransit)/2;
-    NetFlux += LayerRadii[i]^2*TransitSolver(t,[Period, NewTransit, NewT0, b, Rp, Fp]);
+    if LayerRadii[i]>=b+Rp
+      NewTransit = Transit*sqrt(((LayerRadii[i])^2-b^2)/((1)^2-b^2))
+      NewT0 = T0+(Transit-NewTransit)/2;
+      NetFlux += TransitSolver(t,[Period, NewTransit, NewT0, Newb[i], NewRp[i], Fp])*LayerRadii[i].^2;
+    end
+    #plot(NetFlux)
   end
-  NetFlux = NetFlux/(maximum(NetFlux)) #Normalize to 1
+  NetFlux = NetFlux/max(NetFlux); #Normalize to 1
   return NetFlux
 end
