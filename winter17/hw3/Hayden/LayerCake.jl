@@ -44,6 +44,6 @@ function LayerCake(t, Params, LimbDark)
     end
     #plot(NetFlux)
   end
-  NetFlux = NetFlux/max(NetFlux); #Normalize to 1
+  NetFlux = NetFlux/sum(LayerRadii[LayerRadii.>=b+Rp].^2); #Normalize to 1
   return NetFlux
 end

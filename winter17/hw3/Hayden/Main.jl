@@ -36,10 +36,10 @@ title("Limb Darkening")
 xlabel("Time")
 ylabel("Flux")
 
-plot(linspace(0,10,1001),TransitSolver(linspace(0,10,1001), [10,7,1.3,0.,0.02,0]))
+plot(linspace(0,10,1001),TransitSolver(linspace(0,10,1001), [10,7,1.3,0.2,0.02,0]))
 
-plot(linspace(0,10,1001),LayerCake(linspace(0,10,1001), [10,7,1.3,0.,0,0.02,0,1000],x->x)) #Linear
+plot(linspace(0,10,1001),LayerCake(linspace(0,10,1001), [10,7,1.3,0.2,0.02,0,200],x->x)) #Linear
 
-plot(linspace(0,10,1001),LayerCake(linspace(0,10,1001), [10,7,1.3,0.,0,0.02,0,1000],x->x^2)) #Quadratic
+plot(linspace(0,10,1001),LayerCake(linspace(0,10,1001), [10,7,1.3,0.2,0.02,0,200],x->x^2)) #Quadratic
 
 legend(["No Limb Darkening","Linear","Quadratic"])
