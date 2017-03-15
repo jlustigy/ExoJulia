@@ -1,4 +1,4 @@
-# This is a "wrapper" for ttv_nplanet.jl for 3 planets used for calling the 
+# This is a "wrapper" for ttv_nplanet.jl for 3 planets used for calling the
 # function with the LsqFit function curve_fit.jl
 # The inner two planets transit; the outer does not.
 include("ttv_nplanet.jl")
@@ -10,7 +10,7 @@ ntrans = [38,24,2]
 jmax = 5
 # Call ttv_nplanet:
 #println("param3: ",param)
-param3 = [param[1:11];p3_cur;param[12:14]]
+param3 = [param[1:11];p3_cur;param[12:12];ecos;esin]
 ttv = ttv_nplanet(nplanet,jmax,ntrans,param3)
 # We measure transit times, not TTVs, so add
 # back in the linear ephemeris:
